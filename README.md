@@ -24,5 +24,6 @@ npm run dev   # http://localhost:3000
 src/app/(public)/     公開エリア（ログイン不要・検索エンジンに公開）
 src/app/(resident)/   住民限定エリア（ログイン必須・noindex・下部タブあり）
 src/components/       共通コンポーネント（村のイラスト、下部タブ、上部バー、トースト、確認ダイアログ）
+content/guide.ts      吃音情報ガイドのデータ（URL・情報源・最終確認日はここで更新）
 src/app/globals.css   デザイントークン（試作品の :root を移植）と共通クラス
 ```

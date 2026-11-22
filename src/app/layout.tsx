@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Zen_Kaku_Gothic_New, Zen_Old_Mincho } from "next/font/google";
 import { ToastProvider } from "@/components/Toast";
+import { SITE_URL } from "@/lib/metadata";
 import "./globals.css";
 
 // 日本語フォントはサブセットのプリロードができないため preload: false にする
@@ -21,6 +22,7 @@ const zenKakuGothicNew = Zen_Kaku_Gothic_New({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "吃音村｜吃音を抱えて生きる人たちのオンライン自助グループ",
     template: "%s｜吃音村",
