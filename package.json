@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "tsx scripts/seed.ts",
+    "emulators": "firebase emulators:start --only auth,firestore"
   },
   "dependencies": {
     "firebase": "^13.4.0",
@@ -20,6 +22,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "firebase-admin": "^14.5.1",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

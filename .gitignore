@@ -42,3 +42,7 @@ next-env.d.ts
 
 # allow env example
 !.env.example
+
+# Firebase service account keys (never commit)
+*service-account*.json
+serviceAccount*.json

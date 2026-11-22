@@ -1,13 +1,25 @@
 "use client";
 
-// ホーム（試作品の V.home）。今月の集会・図書館の新着・最近村に来た住民は各段階で追加する
+// ホーム（試作品の V.home）。今月の集会・図書館の新着は第5・6段階で追加する
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { MapIcon } from "@/components/icons";
+import { ResidentCard } from "@/components/ResidentCard";
 import { VillageIllustration } from "@/components/VillageIllustration";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { listResidents } from "@/lib/firebase/users";
+import type { UserProfile } from "@/lib/types";
 
 export function HomeView() {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const [newcomers, setNewcomers] = useState<UserProfile[]>([]);
+
+  useEffect(() => {
+    listResidents(3).then(
+      (p) => setNewcomers(p.residents),
+      () => setNewcomers([]),
+    );
+  }, []);
   return (
     <>
       <VillageIllustration />
@@ -20,6 +32,16 @@ export function HomeView() {
             ここには、あなたと同じように吃音を抱えながら生きている人たちがいます。
           </p>
         </div>
+        {newcomers.length > 0 && (
+          <>
+            <h2 className="sec">最近村に来た住民</h2>
+            <div className="list">
+              {newcomers.map((r) => (
+                <ResidentCard key={r.uid} resident={r} isMe={r.uid === user?.uid} />
+              ))}
+            </div>
+          </>
+        )}
         <Link href="/guide" className="card">
           <div className="feature">
             <span className="ic">

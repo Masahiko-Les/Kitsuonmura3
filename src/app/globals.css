@@ -414,3 +414,22 @@ dl.prof dd {
     animation: none !important;
   }
 }
+
+/* アバター（ニックネームの頭文字） */
+.av {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #fff;
+  flex: none;
+  font-family: var(--f-display);
+  font-size: 16px;
+}
+.av.lg {
+  width: 64px;
+  height: 64px;
+  font-size: 26px;
+}

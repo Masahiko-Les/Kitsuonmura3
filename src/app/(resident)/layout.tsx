@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AuthGate } from "@/components/AuthGate";
 import { BottomNav } from "@/components/BottomNav";
 
@@ -14,11 +15,12 @@ export const metadata: Metadata = {
 
 export default function ResidentLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    // AuthGate と BottomNav は URL を読むため、動的なURL（/residents/[uid] など）では Suspense が必要
+    <Suspense>
       <AuthGate>
         <main className="screen">{children}</main>
         <BottomNav />
       </AuthGate>
-    </>
+    </Suspense>
   );
 }

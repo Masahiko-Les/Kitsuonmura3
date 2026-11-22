@@ -19,3 +19,19 @@ export function splitTags(text: string | undefined | null) {
     .map((x) => x.trim())
     .filter(Boolean);
 }
+
+type TimestampLike = { toDate(): Date } | null | undefined;
+
+/** Timestamp → "2026年11月" */
+export function formatMonth(ts: TimestampLike) {
+  if (!ts) return "";
+  const d = ts.toDate();
+  return `${d.getFullYear()}年${d.getMonth() + 1}月`;
+}
+
+/** Timestamp → "2026年11月3日" */
+export function formatDate(ts: TimestampLike) {
+  if (!ts) return "";
+  const d = ts.toDate();
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+}
