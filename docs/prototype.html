@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>吃音村 試作版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 一列のスマホ画面。上部に水彩の村、下は文章が主役のカード */
+  --paper:#FAF7F0; --surface:#FFFFFF; --ink:#2C3530; --muted:#6B7168;
+  --green:#2F5D4A; --green-soft:#E4EDE6; --brown:#9C7D5B; --brown-soft:#F2EBDF;
+  --line:#E6DFD2; --danger:#A5483B;
+  --f-display:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:#ECE6DA}
+body{font-family:var(--f-body);color:var(--ink);-webkit-font-smoothing:antialiased;font-size:15px}
+#app{max-width:480px;margin:0 auto;height:100%;background:var(--paper);display:flex;flex-direction:column;position:relative;box-shadow:0 0 0 1px var(--line)}
+.screen{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line);background:var(--surface);padding:6px 0 calc(6px + env(safe-area-inset-bottom))}
+.nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;font-size:11px;color:var(--muted);padding:4px 0;cursor:pointer}
+.nav svg{width:24px;height:24px}
+.nav button.on{color:var(--green);font-weight:700}
+svg.i{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(250,247,240,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar h1{flex:1;text-align:center;font-size:16px;margin:0;font-weight:700;text-wrap:balance}
+.icon-btn,.bar-sp{width:40px;height:40px;flex:none}
+.icon-btn{border:0;background:none;border-radius:50%;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.icon-btn svg{width:22px;height:22px}
+.text-btn{border:0;background:none;font:inherit;font-weight:700;color:var(--green);padding:8px;cursor:pointer;flex:none}
+.pad{padding:16px 18px 32px;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+button.card{text-align:left;font:inherit;color:inherit;width:100%;cursor:pointer}
+.eyebrow{font-size:12px;color:var(--brown);font-weight:700;letter-spacing:.06em}
+.display{font-family:var(--f-display);font-weight:700;text-wrap:balance;margin:0}
+.prose{font-size:16px;line-height:1.95;white-space:pre-wrap;word-break:break-word;margin:0}
+.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:normal}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+p{margin:0;line-height:1.8}
+.btn{font:inherit;font-weight:700;border-radius:999px;padding:13px 20px;border:1px solid var(--green);background:var(--green);color:#fff;cursor:pointer;text-align:center}
+.btn.ghost{background:transparent;color:var(--green)}
+.btn.danger{background:var(--danger);border-color:var(--danger)}
+.btn.block{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.chip.brown{background:var(--brown-soft);color:#74583A}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.filter{border:1px solid var(--line);background:var(--surface);font:inherit;font-size:13px;padding:6px 14px;border-radius:999px;cursor:pointer;color:var(--ink);flex:none}
+.filter.on{background:var(--green);color:#fff;border-color:var(--green)}
+.react{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;color:var(--muted);cursor:pointer;align-self:flex-start}
+.react svg{width:18px;height:18px}
+.react b{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700}
+.react.on{background:var(--green-soft);border-color:#BFD3C5;color:var(--green)}
+.react.mine{cursor:default}
+.who{display:flex;align-items:center;gap:10px}
+.who .name{font-weight:700}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex:none;font-family:var(--f-display);font-size:16px}
+.av.lg{width:64px;height:64px;font-size:26px}
+form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:700}
+.hint{font-size:12px;color:var(--muted);line-height:1.6}
+input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);width:100%}
+textarea{min-height:150px;line-height:1.8;resize:vertical}
+textarea.tall{min-height:320px}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.hero svg{display:block;width:100%;height:auto}
+.note{font-size:12px;background:var(--brown-soft);color:#6A5034;padding:10px 12px;border-radius:10px;line-height:1.7}
+dl.prof{margin:0;display:grid;gap:16px}
+dl.prof dt{font-size:12px;color:var(--brown);font-weight:700;margin-bottom:4px}
+dl.prof dd{margin:0;line-height:1.8}
+.sec{font-size:15px;font-weight:700;margin:6px 0 -4px;display:flex;justify-content:space-between;align-items:baseline}
+.sec .more{font-size:13px;color:var(--green);background:none;border:0;font:inherit;font-size:13px;cursor:pointer}
+.list{display:flex;flex-direction:column;gap:12px}
+.menu{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.menu button{font:inherit;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:15px 16px;cursor:pointer;color:var(--ink);display:flex;justify-content:space-between;align-items:center}
+.menu button:last-child{border-bottom:0}
+.menu .warn{color:var(--danger)}
+.book-row{display:flex;gap:14px;align-items:flex-start}
+.cover{width:54px;height:78px;border-radius:2px 6px 6px 2px;flex:none;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-family:var(--f-display);font-size:10.5px;color:#fff;padding:6px 0;box-shadow:inset 5px 0 0 rgba(0,0,0,.13);overflow:hidden;line-height:1.3}
+.cover.lg{width:90px;height:128px;font-size:15px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--muted)}
+.theme-head{background:var(--green);color:#fff;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px}
+.theme-head .eyebrow{color:#CFE0D4}
+.theme-head p{color:#E8F0EA;font-size:14px}
+.archive-row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.count{font-size:12px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.divider{height:1px;background:var(--line);margin:4px 0}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;z-index:50;animation:toastIn .3s both;max-width:90vw;text-align:center}
+.dlg-bg{position:fixed;inset:0;background:rgba(30,35,32,.4);display:grid;place-items:center;z-index:60;padding:20px}
+.dlg{background:var(--surface);border-radius:16px;padding:20px;max-width:340px;width:100%}
+.dlg .row{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}
+.proto{font-size:11px;text-align:center;color:var(--muted);padding:6px;background:var(--brown-soft)}
+/* opening */
+.opening{min-height:100%;display:flex;flex-direction:column}
+.skip{position:absolute;top:10px;right:10px;z-index:3;background:rgba(255,255,255,.75);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;color:var(--muted);cursor:pointer}
+.welcome{padding:26px 26px 36px;display:flex;flex-direction:column;gap:14px}
+.welcome p{font-family:var(--f-display);font-size:17px;line-height:1.9}
+.welcome .big{font-size:27px;font-weight:700}
+.welcome .cta{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.anim .wl{animation:fadeUp .9s var(--d) both}
+.anim .cta{animation:fadeUp .6s 7.4s both}
+.anim .house{transform-box:fill-box;transform-origin:50% 100%;animation:build .7s cubic-bezier(.2,.8,.2,1) var(--d) both}
+.anim .boat{animation:sail 2.6s ease-in-out 1.3s both}
+.anim .traveler{animation:appear .5s 3.9s both}
+.anim .folk{animation:appear .6s 4.2s both}
+@keyframes build{from{transform:scaleY(0);opacity:0}}
+@keyframes sail{from{transform:translateX(150px)}}
+@keyframes appear{from{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}}
+@keyframes toastIn{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.pub-h{font-family:var(--f-display);font-size:28px;font-weight:700;margin:0}
+.feature{display:flex;gap:12px;align-items:flex-start}
+.feature .ic{width:40px;height:40px;border-radius:12px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;flex:none}
+.feature .ic svg{width:22px;height:22px}
+.counter{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.guide-item{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--line)}
+.guide-item:last-child{border-bottom:0;padding-bottom:0}
+.guide-item:first-of-type{padding-top:4px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const I={
+ home:'<svg class="i" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+ card:'<svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11" r="2"/><path d="M5.5 16c.8-1.6 5.2-1.6 6 0M14 10h4M14 13h4"/></svg>',
+ talk:'<svg class="i" viewBox="0 0 24 24"><path d="M4 5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M19 9h1a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2v2l-3-2h-4"/></svg>',
+ book:'<svg class="i" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 2 3 3 0 0 1 3-2h6v14h-6a3 3 0 0 0-3 2 3 3 0 0 0-3-2H3z"/><path d="M12 7v14"/></svg>',
+ me:'<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
+ back:'<svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+ leaf:'<svg class="i" viewBox="0 0 24 24"><path d="M12 21v-8"/><path d="M12 13c0-4.5 3-7.5 8-7.5 0 5-3.2 8.2-8 7.5z"/><path d="M12 15.5c0-3.2-2.2-5.5-6.5-5.5 0 4 2.3 6.2 6.5 5.5z"/></svg>',
+ chev:'<svg class="i" viewBox="0 0 24 24" width="18" height="18"><path d="M9 5l7 7-7 7"/></svg>',
+ map:'<svg class="i" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>'
+};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today=()=>{const d=new Date();return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`};
+const mins=t=>Math.max(1,Math.round((t||'').length/500));
+const split=t=>(t||'').split(/[、,，]/).map(x=>x.trim()).filter(Boolean);
+const AVC=['#5E7F6A','#9C7D5B','#6E8FA0','#A0674E','#7A7397','#4F7A62'];
+const COV=['#2F5D4A','#7A5E40','#4D6E80','#8A4F3F','#5B5A7A','#6B7F45'];
+const hash=s=>[...String(s)].reduce((a,c)=>a+c.charCodeAt(0),0);
+const avatar=(p,cls='')=>`<span class="av ${cls}" style="background:${AVC[hash(p.id)%AVC.length]}" aria-hidden="true">${esc((p.nickname||'?')[0])}</span>`;
+
+function seed(){return{
+ v:1, me:null, reacted:{},
+ residents:[
+  {id:'r1',nickname:'みなと',age:'30代',region:'神奈川県',job:'会社員（営業職）',features:'言葉の最初の音が出にくくなる「難発」が多い',onset:'小学2年生ごろ',hardSounds:'か行、た行',hardWords:'自分の名前、会社名、ありがとうございます',hardScenes:'電話対応、自己紹介、会議での発言',struggles:'取引先への電話で、最初のひと言が出ない。名乗るまでに沈黙が続いて、いたずら電話だと思われたことがある。',tips:'名乗る前に「お世話になっております」をゆっくり置く。どうしても出ないときは、無理をせずメールに切り替える。',hobbies:'釣り、喫茶店めぐり',challenges:'社内の勉強会で、一度だけ発表してみたい。',hcount:14,joined:'2026年9月',
+   history:'小学2年生の国語の時間、音読の順番が回ってきたとき、最初の一文字がどうしても出ませんでした。教室が静かになって、誰かが小さく笑った。その日から、音読の順番を数えるのが癖になりました。\n\n中学・高校では「おとなしい人」として過ごしました。本当は話したいことがたくさんあったのに、言い換えられる言葉を探しているうちに会話が先に進んでしまう。家に帰ってから、言えなかった言葉をノートに書いていました。\n\n大学3年のとき、初めて言友会の例会に行きました。部屋に入ると、自分と同じようにつっかえながら自己紹介をする人たちがいました。誰も笑わないし、誰も急かさない。帰りの電車で、なぜか涙が出ました。吃音があるのは自分だけではない、と頭ではなく体で分かった日でした。\n\n就職では、あえて営業職を選びました。克服したかったからではなく、人と話すことが本当は好きだったからです。今も電話は怖いし、名前が出ない日もあります。それでも、つっかえながら話す自分を少しずつ許せるようになってきました。\n\nこれを読んでいる誰かが、昔の自分と同じように音読の順番を数えているなら、そこから先にも人生は続いていると伝えたいです。'},
+  {id:'r2',nickname:'ことり',age:'20代',region:'大阪府',job:'大学院生（心理学）',features:'連発が出やすい。緊張すると難発も出る',onset:'3歳ごろ（親から聞いた）',hardSounds:'あ行',hardWords:'「ありがとう」「あの」',hardScenes:'ゼミ発表、飲食店での注文、初対面',struggles:'ゼミで発表するたびに、内容よりも「どもらずに言えるか」ばかり考えてしまう。',tips:'発表原稿に、言いやすい言い換えを小さくメモしておく。',hobbies:'読書、ラジオ',challenges:'学会でポスター発表をしてみたい。',hcount:9,joined:'2026年10月',
+   history:'物心ついたときには、もうどもっていました。小学校では友だちに真似されて、家では「ゆっくり話しなさい」と言われ続けました。ゆっくり話しても出ない言葉があることを、うまく説明できませんでした。\n\n高校で、吃音について調べた本を読んで、自分の話し方に名前があると知りました。それだけで少し楽になったのを覚えています。\n\n今は心理学を学んでいます。自分の苦労を研究対象にしたい気持ちと、まだ距離を置きたい気持ちの両方があります。'},
+  {id:'r3',nickname:'しげる',age:'50代',region:'北海道',job:'元郵便局員',features:'若いころは難発が強かった。今は落ち着いている日が多い',onset:'小学校入学前',hardSounds:'さ行',hardWords:'住所、数字',hardScenes:'窓口での読み上げ、電話',struggles:'今は大きな苦労は少ないが、若い人の話を聞くと昔の自分を思い出す。',tips:'出ない言葉は「書いて見せる」と割り切った。',hobbies:'家庭菜園、将棋',challenges:'若い世代の話を聴く場に、いつか参加したい。',hcount:21,joined:'2026年8月',
+   history:'私の若いころは、吃音という言葉を知っている人はほとんどいませんでした。「気の持ちよう」と言われ、自分でもそう思い込んでいました。\n\n郵便局の窓口に30年立ちました。数字が言えずに、お客さんを待たせたことは数えきれません。それでも、毎日来てくれるおばあさんが「あんたの窓口がいい」と言ってくれたことがありました。話し方ではなく、人を見てくれる人もいるのだと知りました。\n\n40代になってようやく、吃音を隠すのをやめました。隠すことに使っていた力を、ほかのことに使えるようになりました。'},
+  {id:'r4',nickname:'あおい',age:'40代',region:'福岡県',job:'看護師',features:'難発。言い換えでしのぐことが多い',onset:'小学3年生ごろ',hardSounds:'は行、ま行',hardWords:'患者さんの名前、薬の名前',hardScenes:'申し送り、医師への電話報告',struggles:'患者さんの名前を呼べないとき、申し訳なさと焦りでいっぱいになる。',tips:'職場の一部の人には吃音のことを伝えた。それだけで電話報告がずいぶん楽になった。',hobbies:'ヨガ、温泉',challenges:'後輩の吃音のある看護学生の相談に乗れる人になりたい。',hcount:11,joined:'2026年10月',
+   history:'看護師になると決めたとき、周りからは「話す仕事なのに大丈夫？」と言われました。正直、自分でも不安でした。\n\n新人のころは、申し送りが怖くて毎朝胃が痛かったです。患者さんの名前が出なくて、言い換えもできない。そんなとき、先輩が黙って待ってくれたことを今も覚えています。\n\n今は、吃音があるからこそ、言葉にならない患者さんの気持ちを待てるのかもしれないと思うことがあります。'},
+  {id:'r5',nickname:'はるか',age:'20代',region:'東京都',job:'カフェ店員',features:'連発と難発の両方。日によって波がある',onset:'幼稚園のころ',hardSounds:'い、う',hardWords:'「いらっしゃいませ」',hardScenes:'接客の第一声、電話注文',struggles:'「いらっしゃいませ」が出ない日がある。',tips:'お辞儀を先にして、声はあとからついてくるようにしている。',hobbies:'イラスト、カフェめぐり',challenges:'いつか自分のお店を持ちたい。',hcount:7,joined:'2026年11月',
+   history:'接客の仕事を選んだら、友だちに驚かれました。私自身、なぜ選んだのかうまく説明できません。ただ、お店という場所が好きでした。\n\n最初の1か月は毎日やめようと思っていました。今も、いらっしゃいませが出ない日はあります。でも、常連さんの顔を覚えるのは誰よりも早いと言われます。'}
+ ],
+ themes:[
+  {id:'t11',month:'2026年11月',title:'自分の名前を言うときの苦労について',desc:'自己紹介、電話、受付。自分の名前を言う場面で感じてきたことを、自由に書いてください。'},
+  {id:'t10',month:'2026年10月',title:'電話対応で苦労したことはありますか？',desc:'電話にまつわる経験や、今の思いを聞かせてください。'},
+  {id:'t09',month:'2026年9月',title:'最近、少し勇気を出せたことはありますか？',desc:'どんなに小さなことでも構いません。'},
+  {id:'t08',month:'2026年8月',title:'吃音と就職活動について',desc:'面接、エントリー、職場選び。就職活動の中で経験したことを書いてください。'}
+ ],
+ posts:[
+  {id:'p1',themeId:'t11',authorId:'r1',date:'2026年11月3日',count:8,text:'名刺交換のとき、自分の名前だけが出ません。会社名は言えるのに、苗字の最初の音で止まってしまう。\n\n最近は、名刺を先に差し出してから名乗るようにしています。相手が名刺に目を落としている間なら、少しつっかえても大丈夫だと思えるからです。'},
+  {id:'p2',themeId:'t11',authorId:'r4',date:'2026年11月8日',count:5,text:'自分の名前より、患者さんの名前を呼ぶほうがつらいです。呼べないまま病室の前で立ち止まってしまうことがあります。\n\nここに書いてみて、名前を呼ぶことを、私はそれだけ大切にしているのだと気づきました。'},
+  {id:'p3',themeId:'t11',authorId:'r5',date:'2026年11月15日',count:3,text:'カフェでは名札をつけているので、名乗らなくていいのが少しありがたいです。名札に助けられているなんて、誰にも言ったことがありませんでした。'},
+  {id:'p4',themeId:'t10',authorId:'r3',date:'2026年10月5日',count:12,text:'若いころ、電話が鳴るたびにトイレに逃げていました。今思えば、逃げ場があったことに救われていたのかもしれません。'},
+  {id:'p5',themeId:'t10',authorId:'r2',date:'2026年10月19日',count:6,text:'美容院の予約は、ずっとネット予約ができるお店しか選んでいません。電話をしなくていい時代でよかったと思う一方で、電話をしない自分に少し負けた気もしています。'},
+  {id:'p6',themeId:'t09',authorId:'r5',date:'2026年9月12日',count:9,text:'先週、初めて自分から常連さんに話しかけました。「いつもありがとうございます」の「い」が出なくて、結局お辞儀だけになりました。でも、常連さんは笑ってお辞儀を返してくれました。'},
+  {id:'p7',themeId:'t09',authorId:'r2',date:'2026年9月20日',count:4,text:'ゼミで、自分の吃音のことを初めて話しました。手が震えていたけれど、話し終えたあと、先生が「話してくれてありがとう」と言ってくれました。'},
+  {id:'p8',themeId:'t08',authorId:'r1',date:'2026年8月2日',count:15,text:'面接で吃音のことを伝えるか、最後まで迷いました。結局、伝えた会社に入りました。伝えたからこそ、ありのままで働ける場所を選べたのだと今は思います。'},
+  {id:'p9',themeId:'t08',authorId:'r3',date:'2026年8月25日',count:7,text:'私の時代は、面接で吃音を伝えるなど考えられませんでした。今の若い人が、自分の言葉で選んでいることを心強く思います。'}
+ ],
+ books:[
+  {id:'b1',authorId:'r1',title:'きよしこ',bookAuthor:'重松清',tag:'吃音',date:'2026年10月12日',count:10,
+   struggle:'中学生のころ、自分の話し方を誰にも説明できずに、ひとりで抱えていました。',
+   encounter:'図書室で偶然手に取りました。吃音のある少年が主人公の小説だと、読み始めてから知りました。',
+   words:'言いたいことが言えない少年の、言葉にならない気持ちが丁寧に描かれていて、自分の気持ちを代わりに書いてもらったように感じました。',
+   thought:'吃音のある人が、物語の主人公になれるのだと思いました。',
+   change:'自分の経験も、いつか誰かに届く物語になるかもしれないと思えるようになりました。'},
+  {id:'b2',authorId:'r3',title:'夜と霧',bookAuthor:'V・E・フランクル',tag:'人生の意味',date:'2026年9月3日',count:13,
+   struggle:'40代のころ、仕事も家庭もうまくいかず、自分の人生に意味があるのか分からなくなっていました。',
+   encounter:'職場の先輩に勧められました。',
+   words:'人生に何を期待するかではなく、人生から何を問われているかを考える、という考え方に支えられました。',
+   thought:'吃音がなければ、と考え続けるのをやめて、吃音とともに今日をどう生きるかを考えるようになりました。',
+   change:'大きく変わったわけではありませんが、つらい日にも「今日は何を問われているのか」と考える習慣ができました。'},
+  {id:'b3',authorId:'r2',title:'嫌われる勇気',bookAuthor:'岸見一郎・古賀史健',tag:'勇気',date:'2026年10月28日',count:6,
+   struggle:'人にどう思われるかが気になって、発表の前は眠れませんでした。',
+   encounter:'大学の友人と読書会で読みました。',
+   words:'他人の評価は自分では変えられない、という考え方に出会いました。',
+   thought:'聞き手がどう感じるかは、聞き手の課題なのかもしれないと考えました。',
+   change:'まだ発表は怖いです。でも、怖いまま話してもいいのだと少し思えるようになりました。'},
+  {id:'b4',authorId:'r5',title:'星の王子さま',bookAuthor:'サン＝テグジュペリ',tag:'孤独',date:'2026年11月10日',count:4,
+   struggle:'接客の仕事を始めたばかりで、毎日自信をなくしていました。',
+   encounter:'子どものころ読んだ本を、なんとなく読み返しました。',
+   words:'大切なものは目に見えない、という一節が有名ですが、今回は王子さまがひとつの花を大切にする場面が心に残りました。',
+   thought:'正直、読んで何かが大きく変わったわけではありません。',
+   change:'ただ、うまく話せなかった日も、お店に来てくれる人を大切に思う気持ちは本物だと思えました。'}
+ ]
+}}
+
+const K='kitsuonmura-proto-v1';
+function load(){try{const s=localStorage.getItem(K);return s?JSON.parse(s):null}catch(e){return null}}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+let S=load()||seed();
+const person=id=>id==='me'?S.me:S.residents.find(r=>r.id===id);
+
+/* ---------- navigation ---------- */
+let route={name:S.me?'home':'public',p:{}}, stack=[];
+function go(name,p={}){stack.push(route);route={name,p};render()}
+function back(){route=stack.pop()||{name:S.me?'home':'public',p:{}};render()}
+function tab(name){stack=[];route={name,p:{}};render()}
+const app=document.getElementById('app');
+const TAB={home:'home',residents:'residents',resident:'residents',meeting:'meeting',compose:'meeting',library:'library',book:'library',bookCompose:'library',me:'me',meEdit:'me',guide:'me',about:'me'};
+function render(keep){
+  const sc=document.getElementById('screen');const top=keep&&sc?sc.scrollTop:0;
+  const inApp=!!S.me&&TAB[route.name];
+  app.innerHTML=`<main class="screen" id="screen">${V[route.name](route.p)}</main>${inApp?nav(TAB[route.name]):''}`;
+  document.getElementById('screen').scrollTop=top;
+}
+function nav(on){
+  const t=[['home','ホーム',I.home],['residents','住民票',I.card],['meeting','集会',I.talk],['library','図書館',I.book],['me','自分',I.me]];
+  return `<nav class="nav" aria-label="メインメニュー">${t.map(([k,l,ic])=>`<button class="${on===k?'on':''}" data-act="tab" data-to="${k}" ${on===k?'aria-current="page"':''}>${ic}<span>${l}</span></button>`).join('')}</nav>`;
+}
+function bar(title,right=''){return `<header class="bar"><button class="icon-btn" data-act="back" aria-label="戻る">${I.back}</button><h1>${title}</h1>${right||'<span class="bar-sp"></span>'}</header>`}
+function topbar(title){return `<header class="bar"><span class="bar-sp"></span><h1>${title}</h1><span class="bar-sp"></span></header>`}
+
+function reactBtn(key,obj,mine){
+  const n=obj.count??obj.hcount??0;
+  if(mine)return `<span class="react mine">${I.leaf}<span>あなたの言葉が届いた人</span><b>${n}</b></span>`;
+  const on=!!S.reacted[key];
+  return `<button class="react ${on?'on':''}" data-act="react" data-key="${key}" aria-pressed="${on}">${I.leaf}<span>${on?'届きました':'あなたの言葉が届きました'}</span><b>${n}</b></button>`;
+}
+
+/* ---------- illustration ---------- */
+function village(){
+  const H=[[100,168,22,16,'#8C6B4F',.1],[127,169,18,14,'#5E7F6A',.4],[150,167,24,19,'#A0674E',.7],[180,170,18,13,'#5E7F6A',1.0],[62,171,20,14,'#A0674E',1.3],[206,171,20,14,'#8C6B4F',1.6]];
+  const house=([x,y,w,h,r,d])=>`<g class="house" style="--d:${d}s"><rect x="${x}" y="${y-h}" width="${w}" height="${h}" fill="#F1E6D0" stroke="#B59C7C" stroke-width=".8"/><path d="M${x-3} ${y-h} L${x+w/2} ${y-h-h*.75} L${x+w+3} ${y-h}Z" fill="${r}"/><rect x="${x+w/2-2.5}" y="${y-h*.6}" width="5" height="5" fill="#8C6B4F" opacity=".55"/></g>`;
+  const folk=(x,c)=>`<circle cx="${x}" cy="${165}" r="2.4" fill="${c}"/><rect x="${x-2.2}" y="167.5" width="4.4" height="7" rx="2" fill="${c}"/>`;
+  return `<svg viewBox="0 0 400 240" role="img" aria-label="海辺の小さな村と、港へ向かう一艘の船の水彩画風イラスト">
+<defs>
+<filter id="wc" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter>
+<filter id="soft"><feGaussianBlur stdDeviation="2"/></filter>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5F0E4"/><stop offset="1" stop-color="#E2ECE8"/></linearGradient>
+<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9DBEC0"/><stop offset="1" stop-color="#CFE0DB"/></linearGradient>
+</defs>
+<rect width="400" height="240" fill="url(#sky)"/>
+<circle cx="322" cy="56" r="26" fill="#F2D6A2" opacity=".6" filter="url(#soft)"/>
+<g filter="url(#wc)">
+<path d="M0 140 L60 84 L112 118 L172 64 L240 126 L302 94 L400 138 L400 170 L0 170Z" fill="#AEC6B2" opacity=".8"/>
+<path d="M0 152 L50 118 L120 146 L192 108 L262 152 L262 170 L0 170Z" fill="#84A58F" opacity=".75"/>
+<g fill="#4F7A62" opacity=".8"><ellipse cx="22" cy="156" rx="16" ry="12"/><ellipse cx="44" cy="150" rx="13" ry="13"/><ellipse cx="228" cy="156" rx="14" ry="10"/><ellipse cx="246" cy="158" rx="10" ry="8"/></g>
+<rect y="166" width="400" height="74" fill="url(#sea)"/>
+<path d="M0 164 Q70 158 140 162 T262 166 L272 178 Q200 192 120 188 T0 190Z" fill="#DDCDAA"/>
+<rect x="250" y="172" width="62" height="5" fill="#8C6B4F"/>
+<rect x="262" y="177" width="3" height="9" fill="#7A5C42"/><rect x="290" y="177" width="3" height="9" fill="#7A5C42"/>
+${H.map(house).join('')}
+</g>
+<g stroke="#fff" stroke-width="1.2" opacity=".65" fill="none"><path d="M330 204 q10-4 20 0 t20 0"/><path d="M290 224 q10-4 20 0 t20 0"/><path d="M200 214 q10-4 20 0 t20 0"/><path d="M60 222 q10-4 20 0 t20 0"/></g>
+<g class="boat"><path d="M300 181 h36 l-7 9 h-23z" fill="#8C6B4F"/><path d="M317 180 v-26 l15 24z" fill="#FBF7EE" stroke="#B59C7C" stroke-width=".8"/></g>
+<g class="traveler"><circle cx="300" cy="162" r="2.6" fill="#2F5D4A"/><rect x="297.7" y="164.7" width="4.6" height="7.5" rx="2" fill="#2F5D4A"/></g>
+<g class="folk">${folk(232,'#A0674E')}${folk(241,'#8C6B4F')}${folk(250,'#5E7F6A')}</g>
+</svg>`;
+}
+
+/* ---------- views ---------- */
+const V={};
+V.public=()=>`
+<div class="proto">試作版：表示される住民と語りはすべて架空のサンプルです</div>
+<div class="hero">${village()}</div>
+<div class="pad">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <h1 class="pub-h">吃音村</h1>
+    <p class="display" style="font-size:17px;line-height:1.8">吃音者の、吃音者による、吃音者のための小さな村。</p>
+    <p class="muted">吃音を抱えながら生きてきた人たちが集まり、互いの存在を感じ、苦労を語り、支え合う場所です。</p>
+  </div>
+  <button class="btn block" data-act="go" data-to="opening">はじめて村を訪れる</button>
+  <button class="btn ghost block" data-act="login">住民の方はこちら</button>
+  <div class="sec">吃音村でできること</div>
+  <div class="card">
+    <div class="feature"><span class="ic">${I.card}</span><div><b>住民票</b><p class="small muted">同じ苦労を抱えながら生きている人たちの人生と、吃音史を読めます。</p></div></div>
+    <div class="feature"><span class="ic">${I.talk}</span><div><b>毎月の集会</b><p class="small muted">毎月のテーマについて、言いっぱなし・聞きっぱなしで語り合います。</p></div></div>
+    <div class="feature"><span class="ic">${I.book}</span><div><b>図書館</b><p class="small muted">苦しいときに支えになった本と、その物語が並ぶ本棚です。</p></div></div>
+  </div>
+  <div class="sec">登録しなくても読めます</div>
+  <button class="card" data-act="go" data-to="guide">
+    <div class="feature"><span class="ic">${I.map}</span><div><b>吃音情報ガイド</b><p class="small muted">全国の言友会や自助グループ、相談先、研究機関の情報をまとめています。</p></div></div>
+  </button>
+  <button class="card" data-act="go" data-to="about"><b>吃音村について</b><p class="small muted">この村が大切にしていること</p></button>
+</div>`;
+
+V.opening=()=>{
+  const back=S.me?'<button class="btn block" data-act="tab" data-to="home">村に戻る</button>':'<button class="btn block" data-act="go" data-to="register">住民票をつくる</button><button class="btn ghost block" data-act="back">あとで</button>';
+  return `<div class="opening anim" id="op">
+  <button class="skip" data-act="skip">スキップ</button>
+  <div class="hero">${village()}</div>
+  <div class="welcome">
+    <p class="big wl" style="--d:4.6s">ようこそ、吃音村へ。</p>
+    <p class="wl" style="--d:5.4s">ここは、吃音を抱えながら生きる人たちの小さな村です。</p>
+    <p class="wl" style="--d:6.1s">あなたと同じように、さまざまな苦労を抱えながら生きている人たちがいます。</p>
+    <p class="wl" style="--d:6.8s">私たちは、あなたを歓迎します。</p>
+    <div class="cta">${back}</div>
+  </div></div>`;
+};
+
+V.register=()=>`${bar('住民票をつくる')}
+<div class="pad">
+  <p>まずは、呼び名と年代だけで大丈夫です。吃音のことや吃音史は、あとからいつでも書き足せます。</p>
+  <form data-form="register">
+    <div class="field"><label for="r-mail">メールアドレス</label><input id="r-mail" name="mail" type="email" required autocomplete="email"><span class="hint">試作版のため、メールアドレスは保存されません。</span></div>
+    <div class="field"><label for="r-nick">ニックネーム</label><input id="r-nick" name="nickname" required maxlength="20" placeholder="例：うみかぜ"><span class="hint">本名でなくて構いません。</span></div>
+    <div class="field"><label for="r-age">年代</label><select id="r-age" name="age">${['10代','20代','30代','40代','50代','60代以上','答えない'].map(a=>`<option>${a}</option>`).join('')}</select></div>
+    <p class="note">住民票は、登録した住民だけが読めます。検索エンジンには公開されません。</p>
+    <button class="btn block">村に入る</button>
+  </form>
+</div>`;
+
+V.home=()=>{
+  const th=S.themes[0], tp=S.posts.filter(p=>p.themeId===th.id);
+  const latestBook=S.books[S.books.length-1]; const bp=person(latestBook.authorId);
+  const newcomers=[...S.residents].slice(-3).reverse();
+  return `<div class="hero">${village()}</div>
+<div class="pad">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <h1 class="display" style="font-size:24px">おかえりなさい${S.me?`、${esc(S.me.nickname)}さん`:''}。</h1>
+    <p class="display" style="font-size:16px;line-height:1.9">ここには、あなたと同じように吃音を抱えながら生きている人たちがいます。</p>
+  </div>
+  <button class="card" data-act="tab" data-to="meeting">
+    <span class="eyebrow">今月の集会　${th.month}</span>
+    <b class="display" style="font-size:18px">${esc(th.title)}</b>
+    <span class="small muted">${tp.length}人の住民が語っています</span>
+  </button>
+  <button class="card" data-act="go" data-to="book" data-id="${latestBook.id}">
+    <span class="eyebrow">図書館に新しく並んだ本</span>
+    <div class="book-row">${cover(latestBook)}<div style="display:flex;flex-direction:column;gap:4px"><b>『${esc(latestBook.title)}』</b><span class="small muted">${esc(latestBook.bookAuthor)}</span><span class="small clamp">${esc(bp.nickname)}さん：${esc(latestBook.struggle)}</span></div></div>
+  </button>
+  <div class="sec">最近村に来た住民</div>
+  <div class="list">${newcomers.map(residentCard).join('')}</div>
+  <button class="card" data-act="go" data-to="guide"><div class="feature"><span class="ic">${I.map}</span><div><b>吃音情報ガイド</b><p class="small muted">言友会、自助グループ、相談先をまとめています</p></div></div></button>
+</div>`;
+};
+
+function residentCard(r){
+  const mine=r.id==='me';
+  return `<button class="card" data-act="go" data-to="resident" data-id="${r.id}">
+  <div class="who">${avatar(r)}<div><div class="name">${esc(r.nickname)}${mine?'（あなた）':''}</div><div class="meta"><span>${esc(r.age)}</span>${r.region?`<span>${esc(r.region)}</span>`:''}${r.job?`<span>${esc(r.job)}</span>`:''}</div></div></div>
+  ${split(r.hardScenes).length?`<div class="chips">${split(r.hardScenes).map(s=>`<span class="chip">${esc(s)}</span>`).join('')}</div>`:''}
+  ${r.history?`<p class="small clamp">${esc(r.history)}</p><span class="count">吃音史　約${mins(r.history)}分で読めます</span>`:`<span class="small muted">吃音史はまだ書かれていません</span>`}
+  </button>`;
+}
+
+V.residents=()=>{
+  const all=[...(S.me?[S.me]:[]),...S.residents];
+  return `${topbar('住民票')}
+<div class="pad">
+  <p class="muted small">吃音村には、${all.length}人の住民が暮らしています。</p>
+  <div class="list">${all.map(residentCard).join('')}</div>
+</div>`;
+};
+
+V.resident=({id})=>{
+  const r=person(id); const mine=id==='me';
+  const rows=[['吃音の特徴',r.features],['吃音が始まった時期',r.onset],['苦手な音',r.hardSounds],['苦手な単語',r.hardWords],['苦手な場面',r.hardScenes],['いま抱えている苦労',r.struggles],['自分なりの工夫',r.tips],['趣味や好きなこと',r.hobbies],['これから挑戦したいこと',r.challenges]].filter(x=>x[1]);
+  return `${bar(esc(r.nickname)+'さんの住民票', mine?'<button class="text-btn" data-act="go" data-to="meEdit">編集</button>':'')}
+<div class="pad">
+  <div class="who">${avatar(r,'lg')}<div><div class="display" style="font-size:22px">${esc(r.nickname)}</div><div class="meta"><span>${esc(r.age)}</span>${r.region?`<span>${esc(r.region)}</span>`:''}${r.joined?`<span>${esc(r.joined)}に入村</span>`:''}</div>${r.job?`<div class="small" style="margin-top:2px">${esc(r.job)}</div>`:''}</div></div>
+  ${rows.length?`<div class="card"><dl class="prof">${rows.map(([k,v])=>`<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl></div>`:`<p class="muted">まだ書かれている項目はありません。</p>`}
+  <div class="sec">吃音史${r.history?`<span class="count">約${mins(r.history)}分</span>`:''}</div>
+  ${r.history?`<article class="card" style="padding:20px"><p class="prose">${esc(r.history)}</p>${reactBtn('hist:'+r.id,{hcount:r.hcount||0},mine)}</article>`
+   :`<div class="card"><p class="muted small">${mine?'あなたが吃音とどう向き合ってきたかを、自由に書いてみませんか。短くても構いません。':'まだ書かれていません。'}</p>${mine?'<button class="btn ghost" data-act="go" data-to="meEdit">吃音史を書く</button>':''}</div>`}
+</div>`;
+};
+
+function postCard(p){
+  const a=person(p.authorId); const mine=p.authorId==='me';
+  return `<article class="card">
+  <button class="who" data-act="go" data-to="resident" data-id="${a.id}" style="background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left">${avatar(a)}<div><div class="name">${esc(a.nickname)}${mine?'（あなた）':''}</div><div class="meta"><span>${esc(a.age)}</span><span>${esc(p.date)}</span></div></div></button>
+  <p class="prose">${esc(p.text)}</p>
+  ${reactBtn('post:'+p.id,p,mine)}
+  </article>`;
+}
+
+V.meeting=({themeId})=>{
+  const cur=S.themes[0]; const th=themeId?S.themes.find(t=>t.id===themeId):cur; const isCur=th.id===cur.id;
+  const posts=S.posts.filter(p=>p.themeId===th.id);
+  const head=`<div class="theme-head"><span class="eyebrow">${isCur?'今月のテーマ':'過去の集会'}　${th.month}</span><h2 class="display" style="font-size:21px">${esc(th.title)}</h2><p>${esc(th.desc)}</p>${isCur?'<button class="btn" style="background:#fff;color:var(--green);border-color:#fff;margin-top:6px" data-act="go" data-to="compose">このテーマで語る</button>':''}</div>`;
+  const archive=S.themes.slice(1).map(t=>`<button class="card" data-act="go" data-to="meeting" data-theme="${t.id}"><div class="archive-row"><div><span class="eyebrow">${t.month}</span><div style="font-weight:700;margin-top:4px">${esc(t.title)}</div></div><span class="count">${S.posts.filter(p=>p.themeId===t.id).length}件の語り</span></div></button>`).join('');
+  return `${isCur?topbar('集会'):bar('過去の集会')}
+<div class="pad">
+  ${head}
+  <p class="note">集会は「言いっぱなし、聞きっぱなし」の場です。コメントやアドバイスはつきません。読んで心に届いたら、ボタンで伝えてください。</p>
+  <div class="sec">${posts.length}件の語り</div>
+  <div class="list">${posts.length?posts.slice().reverse().map(postCard).join(''):'<p class="muted">まだ語りはありません。</p>'}</div>
+  ${isCur?`<div class="sec">これまでの集会</div><div class="list">${archive}</div>`:''}
+</div>`;
+};
+
+V.compose=()=>{const th=S.themes[0];return `${bar('語る')}
+<div class="pad">
+  <div><span class="eyebrow">${th.month}の集会</span><h2 class="display" style="font-size:19px;margin-top:4px">${esc(th.title)}</h2></div>
+  <form data-form="post">
+    <div class="field"><label for="c-text">あなたの語り</label><textarea id="c-text" name="text" class="tall" required maxlength="5000" data-count="5000" placeholder="うまくまとめなくて大丈夫です。思ったことを、思ったままに。"></textarea><div class="counter" data-counter-for="c-text">0 / 5000</div></div>
+    <p class="note">この語りは集会が終わったあともアーカイブに残り、あとから来た住民も読めます。いつでも自分で削除できます。</p>
+    <button class="btn block">集会に置く</button>
+  </form>
+</div>`};
+
+function cover(b,lg){return `<div class="cover ${lg?'lg':''}" style="background:${COV[hash(b.title)%COV.length]}" aria-hidden="true">${esc(b.title.slice(0,lg?9:6))}</div>`}
+const TAGS=['すべて','吃音','勇気','孤独','仕事','人生の意味','自己理解','夢・挑戦'];
+V.library=({tag='すべて'})=>{
+  const list=S.books.filter(b=>tag==='すべて'||b.tag===tag).slice().reverse();
+  return `${topbar('図書館')}
+<div class="pad">
+  <p class="display" style="font-size:16px;line-height:1.9">苦しいときに支えになった本と、その人の物語が並ぶ本棚です。</p>
+  <button class="btn block" data-act="go" data-to="bookCompose">本棚に一冊置く</button>
+  <div class="filters" role="group" aria-label="テーマで絞り込む">${TAGS.map(t=>`<button class="filter ${t===tag?'on':''}" data-act="libtag" data-tag="${t}" aria-pressed="${t===tag}">${t}</button>`).join('')}</div>
+  <div class="list">${list.length?list.map(b=>{const a=person(b.authorId);return `<button class="card" data-act="go" data-to="book" data-id="${b.id}"><div class="book-row">${cover(b)}<div style="display:flex;flex-direction:column;gap:5px;min-width:0"><b>『${esc(b.title)}』</b><span class="small muted">${esc(b.bookAuthor)}</span><span class="small clamp">${esc(b.words)}</span><div class="meta"><span>${esc(a.nickname)}さんの一冊</span><span class="chip brown">${esc(b.tag)}</span><span>${I.leaf.replace('class="i"','class="i" width="14" height="14" style="vertical-align:-2px"')} ${b.count}</span></div></div></div></button>`}).join(''):'<p class="muted">このテーマの本はまだありません。</p>'}</div>
+  <p class="note">図書館は、吃音の治し方を教え合う場所ではありません。吃音を抱えながら豊かに生きるための読書を分かち合う場所です。</p>
+</div>`;
+};
+
+V.book=({id})=>{
+  const b=S.books.find(x=>x.id===id); const a=person(b.authorId); const mine=b.authorId==='me';
+  const sec=[['抱えていた苦労や悩み',b.struggle],['この本との出会い',b.encounter],['支えになった考え方や言葉',b.words],['読んで考えたこと',b.thought],['自分の中で変わったこと',b.change]].filter(x=>x[1]);
+  return `${bar('図書館')}
+<div class="pad">
+  <div class="book-row">${cover(b,true)}<div style="display:flex;flex-direction:column;gap:6px"><h2 class="display" style="font-size:21px">『${esc(b.title)}』</h2><span class="muted">${esc(b.bookAuthor)}</span><span class="chip brown" style="align-self:flex-start">${esc(b.tag)}</span></div></div>
+  <button class="who" data-act="go" data-to="resident" data-id="${a.id}" style="background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left">${avatar(a)}<div><div class="name">${esc(a.nickname)}さんの一冊</div><div class="meta"><span>${esc(a.age)}</span><span>${esc(b.date)}</span></div></div></button>
+  <article class="card" style="padding:20px;gap:18px">${sec.map(([k,v])=>`<div><div class="eyebrow" style="margin-bottom:6px">${k}</div><p class="prose">${esc(v)}</p></div>`).join('')}
+  ${reactBtn('book:'+b.id,b,mine)}</article>
+</div>`;
+};
+
+V.bookCompose=()=>`${bar('本棚に一冊置く')}
+<div class="pad">
+  <p class="muted small">悩みだけでなく、夢や挑戦を支えてくれた本も歓迎します。書ける項目だけで構いません。</p>
+  <form data-form="book">
+    <div class="field"><label for="b-title">書名</label><input id="b-title" name="title" required maxlength="60"></div>
+    <div class="field"><label for="b-author">著者</label><input id="b-author" name="bookAuthor" maxlength="40"></div>
+    <div class="field"><label for="b-tag">テーマ</label><select id="b-tag" name="tag">${TAGS.slice(1).map(t=>`<option>${t}</option>`).join('')}</select></div>
+    <div class="field"><label for="b-1">どのような苦労や悩みを抱えていましたか</label><textarea id="b-1" name="struggle"></textarea></div>
+    <div class="field"><label for="b-2">どのようにこの本と出会いましたか</label><textarea id="b-2" name="encounter"></textarea></div>
+    <div class="field"><label for="b-3">どのような考え方や言葉に支えられましたか</label><textarea id="b-3" name="words"></textarea><span class="hint">本文の長い引用は避け、あなたの言葉で書いてください。</span></div>
+    <div class="field"><label for="b-4">読んで、どのようなことを考えましたか</label><textarea id="b-4" name="thought"></textarea></div>
+    <div class="field"><label for="b-5">生き方や考え方に、変化はありましたか</label><textarea id="b-5" name="change"></textarea><span class="hint">「大きな変化はなかった」も、大切な体験です。</span></div>
+    <button class="btn block">本棚に置く</button>
+  </form>
+</div>`;
+
+V.me=()=>{
+  const m=S.me;
+  const myPosts=S.posts.filter(p=>p.authorId==='me'), myBooks=S.books.filter(b=>b.authorId==='me');
+  const reached=myPosts.reduce((a,p)=>a+p.count,0)+myBooks.reduce((a,b)=>a+b.count,0)+(m.hcount||0);
+  return `${topbar('自分')}
+<div class="pad">
+  <button class="card" data-act="go" data-to="resident" data-id="me"><div class="who">${avatar(m,'lg')}<div><div class="display" style="font-size:20px">${esc(m.nickname)}</div><div class="meta"><span>${esc(m.age)}</span><span>${esc(m.joined)}に入村</span></div><span class="small" style="color:var(--green)">自分の住民票を見る</span></div></div></button>
+  <div class="card" style="flex-direction:row;align-items:center;gap:12px"><span class="feature"><span class="ic">${I.leaf}</span></span><p class="small">あなたの言葉は、これまでに<b style="font-size:18px;font-variant-numeric:tabular-nums"> ${reached} </b>回、誰かに届きました。</p></div>
+  <button class="btn ghost block" data-act="go" data-to="meEdit">住民票・吃音史を編集する</button>
+  <div class="sec">あなたの語り</div>
+  ${myPosts.length||myBooks.length?`<div class="list">${myPosts.map(p=>{const t=S.themes.find(x=>x.id===p.themeId);return `<div class="card"><span class="eyebrow">集会　${esc(t.title)}</span><p class="small clamp">${esc(p.text)}</p><div class="archive-row"><span class="count">${esc(p.date)}・${p.count}人に届きました</span><button class="text-btn" style="color:var(--danger)" data-act="del" data-kind="post" data-id="${p.id}">削除</button></div></div>`}).join('')}
+  ${myBooks.map(b=>`<div class="card"><span class="eyebrow">図書館</span><b>『${esc(b.title)}』</b><div class="archive-row"><span class="count">${esc(b.date)}・${b.count}人に届きました</span><button class="text-btn" style="color:var(--danger)" data-act="del" data-kind="book" data-id="${b.id}">削除</button></div></div>`).join('')}</div>`:'<p class="muted small">集会や図書館に置いた語りが、ここに並びます。</p>'}
+  <div class="menu">
+    <button data-act="go" data-to="guide">吃音情報ガイド${I.chev}</button>
+    <button data-act="go" data-to="about">吃音村について${I.chev}</button>
+    <button data-act="go" data-to="opening">オープニングをもう一度見る${I.chev}</button>
+    <button data-act="logout">ログアウト${I.chev}</button>
+    <button class="warn" data-act="reset">試作データを初期化する${I.chev}</button>
+  </div>
+</div>`;
+};
+
+V.meEdit=()=>{
+  const m=S.me;
+  const f=(k,l,ph='',hint='')=>`<div class="field"><label for="e-${k}">${l}</label><input id="e-${k}" name="${k}" value="${esc(m[k])}" placeholder="${ph}">${hint?`<span class="hint">${hint}</span>`:''}</div>`;
+  const t=(k,l,ph='')=>`<div class="field"><label for="e-${k}">${l}</label><textarea id="e-${k}" name="${k}" placeholder="${ph}">${esc(m[k])}</textarea></div>`;
+  return `${bar('住民票を編集')}
+<div class="pad">
+  <p class="note">すべて任意です。書きたいところだけ、書きたいときに。住民票は登録した住民だけが読めます。</p>
+  <form data-form="profile">
+    ${f('nickname','ニックネーム')}
+    <div class="field"><label for="e-age">年代</label><select id="e-age" name="age">${['10代','20代','30代','40代','50代','60代以上','答えない'].map(a=>`<option ${a===m.age?'selected':''}>${a}</option>`).join('')}</select></div>
+    ${f('region','居住地域','例：神奈川県')}
+    ${f('job','職業やこれまでの経験','例：会社員（営業職）')}
+    ${f('features','吃音の特徴','例：最初の音が出にくい')}
+    ${f('onset','吃音が始まった時期','例：小学2年生ごろ')}
+    ${f('hardSounds','苦手な音','例：か行、た行','「、」で区切って書けます')}
+    ${f('hardWords','苦手な単語','例：自分の名前、ありがとうございます')}
+    ${f('hardScenes','苦手な場面','例：電話対応、自己紹介','「、」で区切ると、住民票の一覧にタグとして表示されます')}
+    ${t('struggles','いま抱えている苦労')}
+    ${t('tips','自分なりの工夫')}
+    ${f('hobbies','趣味や好きなこと')}
+    ${f('challenges','これから挑戦したいこと')}
+    <div class="field"><label for="e-history">吃音史</label><span class="hint">これまでの人生で、吃音とどう向き合ってきたか。短くても、長くても構いません。</span><textarea id="e-history" name="history" class="tall" maxlength="10000" data-count="10000">${esc(m.history)}</textarea><div class="counter" data-counter-for="e-history">${(m.history||'').length} / 10000</div></div>
+    <button class="btn block">保存する</button>
+  </form>
+</div>`;
+};
+
+const GUIDE=[
+ {cat:'全国の言友会',items:[
+  {name:'全国言友会連絡協議会',type:'当事者団体',desc:'全国各地の言友会をつなぐ連絡組織です。お住まいの地域の言友会を探すときの起点になります。',fit:'近くで参加できる自助グループを探している人'},
+  {name:'東京言友会',type:'当事者団体',desc:'東京で活動する言友会です。例会などを通じて、当事者同士が顔を合わせて語り合えます。',fit:'首都圏で対面の交流をしたい人'}]},
+ {cat:'医療・相談窓口',items:[
+  {name:'各都道府県の言語聴覚士会',type:'専門職団体',desc:'吃音の相談先を探すときの窓口のひとつです。地域の相談機関について情報を得られることがあります。',fit:'専門家に相談したい人、子どもの吃音について相談したい保護者'}]},
+ {cat:'子どもの吃音と保護者向け',items:[
+  {name:'幼児吃音臨床ガイドライン',type:'ガイドライン',desc:'AMED研究班が作成した、幼児の吃音に関する臨床ガイドラインです。園の先生向けの資料なども添付されています。',fit:'幼児の吃音が気になる保護者、保育・教育関係者'}]},
+ {cat:'学会・研究機関',items:[
+  {name:'日本吃音・流暢性障害学会',type:'学会',desc:'吃音や流暢性障害に関する研究者・臨床家・当事者が集まる学会です。',fit:'吃音について研究や最新の知見を知りたい人'}]},
+ {cat:'オンライン自助グループ',items:[
+  {name:'（掲載候補を調査中）',type:'—',desc:'オンラインで参加できる吃音の自助グループを調べて掲載します。',fit:'近くに自助グループがない人、対面が不安な人'}]}
+];
+V.guide=()=>`${bar('吃音情報ガイド')}
+<div class="pad">
+  <p>吃音に関する団体や相談先を、どんな人に向いているかと一緒にまとめています。このページは登録しなくても読めます。</p>
+  <p class="note">試作版：掲載内容は仮のものです。公開前に各団体の公式情報で確認し、情報源と最終確認日を記載します。</p>
+  ${GUIDE.map(g=>`<div class="sec">${g.cat}</div><div class="card">${g.items.map(it=>`<div class="guide-item"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b>${it.name}</b><span class="chip">${it.type}</span></div><p class="small">${it.desc}</p><p class="small"><span class="muted">向いている人：</span>${it.fit}</p><div class="meta"><span>情報源：公式サイト（確認予定）</span><span>最終確認日：未確認</span></div></div>`).join('')}</div>`).join('')}
+</div>`;
+
+V.about=()=>`${bar('吃音村について')}
+<div class="pad">
+  <h2 class="display" style="font-size:22px">吃音を抱えているのは、自分一人ではない。</h2>
+  <p class="prose" style="font-size:15px">吃音村は、吃音を抱えて生きる人たちが、互いの存在を知り、自分の苦労を語り、他者の人生に触れ、希望を見いだしていく場所です。
+
+吃音を治すことだけを目指すのではなく、吃音を抱えながらも、自分の人生を豊かにしていくことを大切にします。
+
+自分が経験してきた苦労が、別の誰かの支えになる。先人たちが残した語りや読書体験が、後から来る当事者に希望を届ける。住民一人ひとりの人生が、少しずつ村の財産になっていきます。</p>
+  <p class="note">吃音村は医療機関ではなく、治療効果を保証するサービスでもありません。</p>
+</div>`;
+
+/* ---------- actions ---------- */
+const A={
+ tab:d=>tab(d.to),
+ back:()=>back(),
+ go:d=>go(d.to,{id:d.id,themeId:d.theme}),
+ login:()=>{if(S.me)tab('home');else go('register')},
+ skip:()=>{const o=document.getElementById('op');if(o)o.classList.remove('anim')},
+ libtag:d=>{route.p={tag:d.tag};render(true)},
+ react:d=>{
+  const [t,id]=d.key.split(':');
+  const o=t==='post'?S.posts.find(x=>x.id===id):t==='book'?S.books.find(x=>x.id===id):person(id);
+  if(!o)return; const f=t==='hist'?'hcount':'count'; const on=!!S.reacted[d.key];
+  o[f]=Math.max(0,(o[f]||0)+(on?-1:1)); if(on)delete S.reacted[d.key];else S.reacted[d.key]=1;
+  save();render(true);
+ },
+ del:d=>ask('この語りを削除しますか？削除すると、ほかの住民も読めなくなります。','削除する',()=>{
+  if(d.kind==='post')S.posts=S.posts.filter(p=>p.id!==d.id);else S.books=S.books.filter(b=>b.id!==d.id);
+  save();render(true);toast('削除しました');
+ }),
+ logout:()=>{stack=[];route={name:'public',p:{}};render()},
+ reset:()=>ask('試作データを最初の状態に戻します。あなたの住民票と語りも消えます。','初期化する',()=>{S=seed();save();stack=[];route={name:'public',p:{}};render();toast('初期化しました')})
+};
+document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el||!app.contains(el))return;A[el.dataset.act]?.(el.dataset,el)});
+
+const F={
+ register:fd=>{
+  S.me={id:'me',nickname:fd.nickname.trim(),age:fd.age,region:'',job:'',features:'',onset:'',hardSounds:'',hardWords:'',hardScenes:'',struggles:'',tips:'',hobbies:'',challenges:'',history:'',hcount:0,joined:(()=>{const d=new Date();return `${d.getFullYear()}年${d.getMonth()+1}月`})()};
+  save();stack=[];route={name:'home',p:{}};render();toast('住民票ができました。ようこそ、吃音村へ。');
+ },
+ profile:fd=>{Object.assign(S.me,fd);S.me.nickname=(fd.nickname||'').trim()||S.me.nickname;save();back();toast('住民票を保存しました')},
+ post:fd=>{if(!fd.text.trim())return;S.posts.push({id:'m'+Date.now(),themeId:S.themes[0].id,authorId:'me',date:today(),count:0,text:fd.text.trim()});save();back();toast('集会に語りを置きました')},
+ book:fd=>{S.books.push({id:'mb'+Date.now(),authorId:'me',date:today(),count:0,...fd});save();stack=[];route={name:'library',p:{}};render();toast('本棚に一冊置きました')}
+};
+document.addEventListener('submit',e=>{const f=e.target;if(!f.dataset.form)return;e.preventDefault();F[f.dataset.form](Object.fromEntries(new FormData(f)))});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.count){const c=document.querySelector(`[data-counter-for="${t.id}"]`);if(c)c.textContent=`${t.value.length} / ${t.dataset.count}`}});
+
+function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+function ask(msg,ok,fn){
+  const d=document.createElement('div');d.className='dlg-bg';
+  d.innerHTML=`<div class="dlg" role="dialog" aria-modal="true"><p>${msg}</p><div class="row"><button class="btn ghost" data-x="no">やめる</button><button class="btn danger" data-x="ok">${ok}</button></div></div>`;
+  document.body.appendChild(d);d.querySelector('[data-x="no"]').focus();
+  d.addEventListener('click',e=>{const x=e.target.dataset.x;if(e.target===d||x==='no')d.remove();if(x==='ok'){d.remove();fn()}});
+}
+render();
+</script>
+</body>
+</html>
