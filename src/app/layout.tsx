@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Zen_Kaku_Gothic_New, Zen_Old_Mincho } from "next/font/google";
 import { ToastProvider } from "@/components/Toast";
+import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { SITE_URL } from "@/lib/metadata";
 import "./globals.css";
 
@@ -39,9 +40,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja" className={`${zenOldMincho.variable} ${zenKakuGothicNew.variable}`}>
       <body>
-        <ToastProvider>
-          <div className="app">{children}</div>
-        </ToastProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <div className="app">{children}</div>
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );

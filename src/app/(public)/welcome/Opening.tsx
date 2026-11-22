@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLayoutEffect, useState, type CSSProperties } from "react";
 import { VillageIllustration } from "@/components/VillageIllustration";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import styles from "./Opening.module.css";
 
 const LINES: { text: string; delay: number; big?: boolean }[] = [
@@ -18,6 +19,7 @@ const LINES: { text: string; delay: number; big?: boolean }[] = [
 
 export function Opening() {
   const router = useRouter();
+  const { isResident } = useAuth();
   const [skipped, setSkipped] = useState(false);
 
   // Next.js はページを離れても状態を保持するので、離れるときに戻しておく。
@@ -50,15 +52,22 @@ export function Opening() {
             {text}
           </p>
         ))}
-        {/* ログイン済みなら「村に戻る」にする（第3段階で認証と接続） */}
         {/* 最後のボタンが現れたら演出は終わり。スキップボタンを消す */}
         <div className={styles.cta} onAnimationEnd={() => setSkipped(true)}>
-          <Link href="/signup" className="btn block">
-            住民票をつくる
-          </Link>
-          <button type="button" className="btn ghost block" onClick={later}>
-            あとで
-          </button>
+          {isResident ? (
+            <Link href="/home" className="btn block">
+              村に戻る
+            </Link>
+          ) : (
+            <>
+              <Link href="/signup" className="btn block">
+                住民票をつくる
+              </Link>
+              <button type="button" className="btn ghost block" onClick={later}>
+                あとで
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -1,0 +1,87 @@
+rules_version = '2';
+
+// 吃音村のセキュリティルール。
+// 住民限定のデータは画面を隠すだけでなく、ここでアクセスを制御する。
+// 上限値は src/lib/constants.ts の LIMITS と揃えること。
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- 共通 ----
+
+    // メール確認を必須にするか。開発中は false。
+    // 本番前に true にし、.env の NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION も true にする。
+    function requireEmailVerification() {
+      return false;
+    }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // 住民（ログイン済み、かつ必要ならメール確認済み）
+    function isResident() {
+      return signedIn()
+        && (!requireEmailVerification() || request.auth.token.email_verified == true);
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    function str(v, max) {
+      return v is string && v.size() <= max;
+    }
+
+    // ---- 住民票 users/{uid} ----
+
+    function ageGroups() {
+      return ['10代', '20代', '30代', '40代', '50代', '60代以上', '答えない'];
+    }
+
+    function profileKeys() {
+      return ['nickname', 'ageGroup', 'region', 'job', 'features', 'onset',
+              'hardSounds', 'hardWords', 'hardScenes', 'struggles', 'tips',
+              'hobbies', 'challenges', 'history',
+              'historyReactionCount', 'createdAt', 'updatedAt'];
+    }
+
+    // 住民票の本文として正しいか（作成・更新で共通）
+    function validProfile(d) {
+      return d.keys().hasOnly(profileKeys())
+        && d.nickname is string && d.nickname.size() >= 1 && d.nickname.size() <= 20
+        && d.ageGroup in ageGroups()
+        && str(d.region, 200) && str(d.job, 200) && str(d.features, 200)
+        && str(d.onset, 200) && str(d.hardSounds, 200) && str(d.hardWords, 200)
+        && str(d.hardScenes, 200) && str(d.hobbies, 200) && str(d.challenges, 200)
+        && str(d.struggles, 2000) && str(d.tips, 2000)
+        && str(d.history, 10000);
+    }
+
+    match /users/{uid} {
+      allow read: if isResident();
+
+      // 新規登録。共感の件数は0から始まる。メール確認前でも作れる
+      allow create: if isSelf(uid)
+        && validProfile(request.resource.data)
+        && request.resource.data.historyReactionCount == 0
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // 本人による編集。共感の件数と登録日は変えられない
+      allow update: if isSelf(uid) && isResident()
+        && validProfile(request.resource.data)
+        && request.resource.data.historyReactionCount == resource.data.historyReactionCount
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+
+      // 退会は今回作らない
+      allow delete: if false;
+    }
+
+    // ここに書かれていないものは、すべて読み書きできない
+  }
+}
