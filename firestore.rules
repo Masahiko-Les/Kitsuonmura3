@@ -78,8 +78,141 @@ service cloud.firestore {
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time;
 
+      // ほかの住民が吃音史に共感したとき、件数だけを±1する
+      allow update: if isResident() && !isSelf(uid)
+        && reactionCountChange('history', uid, 'historyReactionCount');
+
       // 退会は今回作らない
       allow delete: if false;
+    }
+
+    // ---- 共感 reactions/{targetType_targetId_uid} ----
+    // 共感ボタンを押すと、reactions の作成と対象の件数+1を同じトランザクションで行う。
+    // 取り消すと、reactions の削除と件数-1を同じトランザクションで行う。
+    // 両側のルールで getAfter / existsAfter を使い、片方だけの書き込みを拒否する。
+
+    function docPath(rel) {
+      return path('/databases/' + database + '/documents/' + rel);
+    }
+
+    function reactionTypes() {
+      return ['post', 'book', 'history'];
+    }
+
+    function reactionDoc(type, targetId, uid) {
+      return docPath('reactions/' + type + '_' + targetId + '_' + uid);
+    }
+
+    // 共感の対象ドキュメント（吃音史は住民票そのもの）
+    function targetDoc(type, targetId) {
+      return type == 'post' ? docPath('meetingPosts/' + targetId)
+        : type == 'book' ? docPath('books/' + targetId)
+        : docPath('users/' + targetId);
+    }
+
+    function countField(type) {
+      return type == 'history' ? 'historyReactionCount' : 'reactionCount';
+    }
+
+    // 対象の書き手。吃音史なら住民票の持ち主
+    function authorOf(type, targetId) {
+      return type == 'history' ? targetId : get(targetDoc(type, targetId)).data.authorUid;
+    }
+
+    // 対象側：件数だけが±1され、それに合う reactions の作成・削除が同時に行われているか
+    function reactionCountChange(type, targetId, field) {
+      let before = resource.data[field];
+      let after = request.resource.data[field];
+      let r = reactionDoc(type, targetId, request.auth.uid);
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([field])
+        && ((after == before + 1 && !exists(r) && existsAfter(r))
+          || (after == before - 1 && exists(r) && !existsAfter(r)));
+    }
+
+    match /reactions/{reactionId} {
+      // 自分の共感だけ読める（押したかどうかの確認用）。存在しない場合も確認できるようにする
+      allow read: if isResident()
+        && (resource == null || resource.data.uid == request.auth.uid);
+
+      allow create: if isResident()
+        && request.resource.data.keys().hasOnly(['targetType', 'targetId', 'uid', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.targetType in reactionTypes()
+        && request.resource.data.targetId is string
+        && reactionId == request.resource.data.targetType + '_' + request.resource.data.targetId + '_' + request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && exists(targetDoc(request.resource.data.targetType, request.resource.data.targetId))
+        // 自分の投稿には共感できない
+        && authorOf(request.resource.data.targetType, request.resource.data.targetId) != request.auth.uid
+        && getAfter(targetDoc(request.resource.data.targetType, request.resource.data.targetId))
+             .data[countField(request.resource.data.targetType)]
+           == get(targetDoc(request.resource.data.targetType, request.resource.data.targetId))
+             .data[countField(request.resource.data.targetType)] + 1;
+
+      // 取り消し。対象が削除済みなら、件数を気にせず消せる
+      allow delete: if isResident()
+        && resource.data.uid == request.auth.uid
+        && (!exists(targetDoc(resource.data.targetType, resource.data.targetId))
+          || getAfter(targetDoc(resource.data.targetType, resource.data.targetId))
+               .data[countField(resource.data.targetType)]
+             == get(targetDoc(resource.data.targetType, resource.data.targetId))
+               .data[countField(resource.data.targetType)] - 1);
+
+      allow update: if false;
+    }
+
+    // ---- 集会 ----
+
+    // テーマ。書き込みは管理者のみ（管理画面は第8段階）
+    match /themes/{themeId} {
+      allow read: if isResident();
+      allow write: if isAdmin();
+    }
+
+    // 今月のテーマがどれか（currentThemeId）。テーマを追加するとき管理者が更新する
+    match /config/meeting {
+      allow read: if isResident();
+      allow write: if isAdmin();
+    }
+
+    function postKeys() {
+      return ['themeId', 'authorUid', 'authorNickname', 'authorAgeGroup', 'text', 'reactionCount', 'createdAt'];
+    }
+
+    // 投稿に複製している書き手のニックネーム・年代が、住民票と一致しているか。
+    // 住民票の編集と同じ書き込みで投稿側も直すので getAfter で比べる
+    function authorMatches(d) {
+      let u = getAfter(docPath('users/' + request.auth.uid)).data;
+      return d.authorNickname == u.nickname && d.authorAgeGroup == u.ageGroup;
+    }
+
+    match /meetingPosts/{postId} {
+      allow read: if isResident();
+
+      // 投稿できるのは今月のテーマだけ。本文は5,000字まで
+      allow create: if isResident()
+        && request.resource.data.keys().hasOnly(postKeys())
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.themeId == get(docPath('config/meeting')).data.currentThemeId
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 1
+        && request.resource.data.text.size() <= 5000
+        && request.resource.data.reactionCount == 0
+        && request.resource.data.createdAt == request.time
+        && authorMatches(request.resource.data);
+
+      // 書き手本人：ニックネーム・年代を変えたときに、複製した名前だけを直せる（本文は編集しない）
+      allow update: if isResident()
+        && resource.data.authorUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authorNickname', 'authorAgeGroup'])
+        && authorMatches(request.resource.data);
+
+      // ほかの住民：共感の件数だけを±1
+      allow update: if isResident()
+        && resource.data.authorUid != request.auth.uid
+        && reactionCountChange('post', postId, 'reactionCount');
+
+      allow delete: if isResident() && resource.data.authorUid == request.auth.uid;
     }
 
     // ここに書かれていないものは、すべて読み書きできない

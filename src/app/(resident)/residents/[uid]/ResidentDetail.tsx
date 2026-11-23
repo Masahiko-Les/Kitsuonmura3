@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Avatar } from "@/components/Avatar";
+import { ReactionButton } from "@/components/ReactionButton";
 import { TopBar } from "@/components/TopBar";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { myReactions } from "@/lib/firebase/reactions";
 import { getResident } from "@/lib/firebase/users";
 import { formatMonth, readingMinutes } from "@/lib/format";
 import type { UserProfile } from "@/lib/types";
@@ -42,6 +44,22 @@ export function ResidentDetail() {
       alive = false;
     };
   }, [uid, isMe]);
+
+  // 吃音史に共感済みか
+  const me = user?.uid;
+  const [reaction, setReaction] = useState<{ uid: string; reacted: boolean } | null>(null);
+  useEffect(() => {
+    if (isMe || !me) return;
+    let alive = true;
+    myReactions("history", [uid], me).then(
+      (set) => alive && setReaction({ uid, reacted: set.has(uid) }),
+      () => alive && setReaction({ uid, reacted: false }),
+    );
+    return () => {
+      alive = false;
+    };
+  }, [uid, isMe, me]);
+  const reacted = reaction?.uid === uid ? reaction.reacted : undefined;
 
   const current = state?.uid === uid ? state : null;
   const r = isMe ? profile : current?.status === "ok" ? current.resident : null;
@@ -123,7 +141,13 @@ export function ResidentDetail() {
         {r.history ? (
           <article className="card" style={{ padding: 20 }}>
             <p className="prose">{r.history}</p>
-            {/* 共感ボタンは第5段階で追加する */}
+            <ReactionButton
+              key={r.uid}
+              target={{ type: "history", id: r.uid }}
+              count={r.historyReactionCount}
+              mine={isMe}
+              reacted={reacted}
+            />
           </article>
         ) : (
           <div className="card">

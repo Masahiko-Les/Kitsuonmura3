@@ -35,3 +35,9 @@ export function formatDate(ts: TimestampLike) {
   const d = ts.toDate();
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 }
+
+/** テーマの月 "2026-11" → "2026年11月" */
+export function formatThemeMonth(month: string) {
+  const m = /^(\d{4})-(\d{2})$/.exec(month);
+  return m ? `${Number(m[1])}年${Number(m[2])}月` : month;
+}

@@ -1,14 +1,16 @@
 "use client";
 
-// ホーム（試作品の V.home）。今月の集会・図書館の新着は第5・6段階で追加する
+// ホーム（試作品の V.home）。図書館の新着は第6段階で追加する
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MapIcon } from "@/components/icons";
 import { ResidentCard } from "@/components/ResidentCard";
 import { VillageIllustration } from "@/components/VillageIllustration";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { countThemePosts, getCurrentThemeId, getTheme } from "@/lib/firebase/meeting";
 import { listResidents } from "@/lib/firebase/users";
-import type { UserProfile } from "@/lib/types";
+import { formatThemeMonth } from "@/lib/format";
+import type { Theme, UserProfile } from "@/lib/types";
 
 export function HomeView() {
   const { user, profile } = useAuth();
@@ -20,6 +22,22 @@ export function HomeView() {
       () => setNewcomers([]),
     );
   }, []);
+
+  // 今月の集会
+  const [meeting, setMeeting] = useState<{ theme: Theme; count: number } | null>(null);
+  useEffect(() => {
+    let alive = true;
+    getCurrentThemeId()
+      .then(async (id) => {
+        const theme = id ? await getTheme(id) : null;
+        if (theme && alive) setMeeting({ theme, count: await countThemePosts(theme.id) });
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   return (
     <>
       <VillageIllustration />
@@ -32,6 +50,17 @@ export function HomeView() {
             ここには、あなたと同じように吃音を抱えながら生きている人たちがいます。
           </p>
         </div>
+        {meeting && (
+          <Link href="/meeting" className="card">
+            <span className="eyebrow">今月の集会　{formatThemeMonth(meeting.theme.month)}</span>
+            <b className="display" style={{ fontSize: 18 }}>
+              {meeting.theme.title}
+            </b>
+            <span className="small muted">
+              {meeting.count ? `${meeting.count}件の語りが置かれています` : "まだ語りはありません。最初に語ってみませんか"}
+            </span>
+          </Link>
+        )}
         {newcomers.length > 0 && (
           <>
             <h2 className="sec">最近村に来た住民</h2>

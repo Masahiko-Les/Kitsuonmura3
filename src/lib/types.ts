@@ -40,3 +40,31 @@ export const EMPTY_PROFILE_FIELDS = {
   challenges: "",
   history: "",
 } satisfies Partial<EditableProfile>;
+
+/** 投稿に複製して持つ書き手の情報（一覧で住民票を読みに行かずに名前を出すため） */
+export type AuthorFields = {
+  authorUid: string;
+  authorNickname: string;
+  authorAgeGroup: AgeGroup;
+};
+
+/** themes/{themeId}。ID は月（"2026-11"） */
+export type Theme = {
+  id: string;
+  month: string;
+  title: string;
+  description: string;
+};
+
+/** meetingPosts/{postId} */
+export type MeetingPost = AuthorFields & {
+  id: string;
+  themeId: string;
+  text: string;
+  reactionCount: number;
+  createdAt: Timestamp | null;
+};
+
+/** 共感の対象。post＝集会の語り、book＝図書館の本、history＝吃音史（id は住民の uid） */
+export type ReactionType = "post" | "book" | "history";
+export type ReactionTarget = { type: ReactionType; id: string };

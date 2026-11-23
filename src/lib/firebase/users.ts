@@ -13,6 +13,8 @@ import {
   setDoc,
   startAfter,
   updateDoc,
+  where,
+  writeBatch,
   type QueryDocumentSnapshot,
   type DocumentData,
   type DocumentSnapshot,
@@ -76,7 +78,33 @@ export async function listResidents(pageSize: number, after?: QueryDocumentSnaps
   };
 }
 
-/** 住民票の編集を保存する */
-export function updateProfile(uid: string, data: EditableProfile) {
-  return updateDoc(doc(firestore(), "users", uid), { ...data, updatedAt: serverTimestamp() });
+/** 書き手のニックネーム・年代を複製して持っているコレクション */
+const AUTHORED_COLLECTIONS = ["meetingPosts"];
+
+/**
+ * 住民票の編集を保存する。
+ * ニックネームか年代が変わったら、これまでの投稿に複製している名前も同じ書き込みで直す。
+ */
+export async function updateProfile(uid: string, data: EditableProfile, before: Pick<UserProfile, "nickname" | "ageGroup">) {
+  const db = firestore();
+  const userRef = doc(db, "users", uid);
+  const userData = { ...data, updatedAt: serverTimestamp() };
+  if (data.nickname === before.nickname && data.ageGroup === before.ageGroup) {
+    await updateDoc(userRef, userData);
+    return;
+  }
+  const refs = (
+    await Promise.all(
+      AUTHORED_COLLECTIONS.map((c) => getDocs(query(collection(db, c), where("authorUid", "==", uid)))),
+    )
+  ).flatMap((s) => s.docs.map((d) => d.ref));
+  const author = { authorNickname: data.nickname, authorAgeGroup: data.ageGroup };
+  // 1回の書き込みは500件まで。最初の書き込みに住民票を含める
+  const CHUNK = 450;
+  for (let i = 0; i === 0 || i < refs.length; i += CHUNK) {
+    const batch = writeBatch(db);
+    if (i === 0) batch.update(userRef, userData);
+    refs.slice(i, i + CHUNK).forEach((r) => batch.update(r, author));
+    await batch.commit();
+  }
 }

@@ -89,7 +89,7 @@ function EditForm({ profile }: { profile: UserProfile }) {
     setBusy(true);
     setError("");
     try {
-      await updateProfile(profile.uid, data);
+      await updateProfile(profile.uid, data, profile);
       toast("住民票を保存しました");
       if (window.history.length > 1) router.back();
       else router.push(`/residents/${profile.uid}`);
