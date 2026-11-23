@@ -267,10 +267,9 @@ textarea.tall {
   outline-offset: 2px;
 }
 
-.hero svg {
-  display: block;
-  width: 100%;
-  height: auto;
+/* 村のイラスト（上部の水彩画） */
+.hero {
+  background: var(--brown-soft);
 }
 .note {
   font-size: 12px;

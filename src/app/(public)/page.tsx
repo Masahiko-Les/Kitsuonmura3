@@ -13,7 +13,7 @@ export const metadata = publicMetadata({
 export default function PublicTop() {
   return (
     <>
-      <VillageIllustration />
+      <VillageIllustration preload />
       <div className="pad">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <h1 className="pub-h">吃音村</h1>
