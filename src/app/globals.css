@@ -7,7 +7,7 @@
   --surface: #ffffff;
   --muted-surface: #eef1e9;
   --text: #38483f;
-  --text-muted: #79857c;
+  --text-muted: #626e65; /* 生成りの背景で 5:1（WCAG AA） */
   --brand: #537363;
   --border: #e5e7df;
   --reaction: #a66f68;

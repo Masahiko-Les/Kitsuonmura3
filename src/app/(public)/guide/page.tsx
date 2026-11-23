@@ -1,13 +1,18 @@
-// 公開の吃音情報ガイド。登録しなくても読める（PRODUCT_SPEC.md §8）
-import { GUIDE_CATEGORIES, GUIDE_RESOURCES } from "@content/guide";
+// 公開の吃音情報ガイドの入口。登録しなくても読める（kitsuon_info_guide/CONTENT_GUIDE.md）
+import Link from "next/link";
+import { GUIDE_GROUPS, GUIDE_PAGES, GUIDE_RESOURCES, GUIDE_REVIEW_DATE } from "@content/guide";
 import { Header } from "@/components/Header";
 import s from "@/components/ui.module.css";
 import { formatIsoDate } from "@/lib/format";
 import { publicMetadata } from "@/lib/metadata";
+import g from "./_components/guide.module.css";
+import { GuideSearch } from "./_components/GuideSearch";
+import { Breadcrumbs, GuideNote } from "./_components/parts";
 
 export const metadata = publicMetadata({
   title: "吃音情報ガイド",
-  description: "吃音の自助グループ、相談先、研究機関など、吃音に関する情報の案内です。登録しなくても読めます。",
+  description:
+    "吃音について知りたいとき、仲間を探したいときに。吃音の解説、自助グループ、医療・相談、学校・仕事、研究資料への入口です。登録しなくても使えます。",
   path: "/guide",
 });
 
@@ -16,34 +21,48 @@ export default function Guide() {
     <>
       <Header kind="back" href="/" title="吃音情報ガイド" />
       <main className={s.main}>
-        <p className={s.lead}>登録しなくても読める、吃音に関する情報の案内です。</p>
-        <section className={s.section}>
-          <h2 className={s.h2}>カテゴリー</h2>
-          <div className={s.tags}>
-            {GUIDE_CATEGORIES.map((c) => (
-              <span key={c} className={s.tag}>
-                {c}
-              </span>
+        <div className={s.stack}>
+          <Breadcrumbs items={[{ href: "/", label: "吃音村" }, { label: "吃音情報ガイド" }]} />
+          <h1 className={s.h1}>吃音について知りたいとき、仲間を探したいとき。</h1>
+          <p className={s.lead}>
+            吃音村の情報ガイドは、吃音に関する信頼できる情報や、地域の自助グループへの入口です。登録しなくても使えます。あなたのペースで、必要な情報を探してください。
+          </p>
+        </div>
+
+        <section className={s.section} aria-labelledby="search">
+          <h2 id="search" className={s.h2}>
+            ことば・地域で探す
+          </h2>
+          <GuideSearch
+            pages={GUIDE_PAGES.map(({ slug, title, need, description, keywords, categories }) => ({ slug, title, need, description, keywords, categories }))}
+            resources={GUIDE_RESOURCES}
+            groups={GUIDE_GROUPS}
+          />
+        </section>
+
+        <section className={s.section} aria-labelledby="needs">
+          <h2 id="needs" className={s.h2}>
+            困りごとから探す
+          </h2>
+          <div className={g.needs}>
+            {GUIDE_PAGES.map((p) => (
+              <Link key={p.slug} href={`/guide/${p.slug}`} className={g.need}>
+                {p.need}
+              </Link>
             ))}
           </div>
-          <p className={`${s.small} ${s.muted}`}>カテゴリーごとの案内は、掲載する情報を確認しながら増やしていきます。</p>
         </section>
-        <section className={s.section}>
-          <h2 className={s.h2}>掲載している情報</h2>
-          {GUIDE_RESOURCES.map((g) => (
-            <div key={g.name} className={s.card}>
-              <span className={s.cardLabel}>{g.category}</span>
-              <span className={s.cardTitle}>{g.name}</span>
-              <p className={s.small}>{g.summary}</p>
-              <a href={g.url} target="_blank" rel="noopener noreferrer" className={s.small} style={{ color: "var(--brand)" }}>
-                公式サイト：{g.url}
-              </a>
-              <span className={`${s.small} ${s.muted}`}>
-                {g.checkedAt ? `最終確認日：${formatIsoDate(g.checkedAt)}` : "掲載内容は確認中です"}
-              </span>
-            </div>
-          ))}
-        </section>
+
+        <p className={`${s.small} ${s.muted}`}>
+          掲載している情報源は{GUIDE_RESOURCES.length}件、自助グループは{GUIDE_GROUPS.length}団体です（{formatIsoDate(GUIDE_REVIEW_DATE)}
+          に出典を確認）。少しずつ増やしていきます。
+        </p>
+
+        <GuideNote />
+
+        <Link href="/welcome" className={s.textLink}>
+          吃音村の住民になる（オンラインで仲間と語る）
+        </Link>
       </main>
     </>
   );

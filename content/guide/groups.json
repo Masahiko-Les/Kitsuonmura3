@@ -1,0 +1,475 @@
+{
+  "important": "加盟団体一覧の掲載名を転記した初期データ。個別団体の運営状況・開催日時・外部リンクは未検証。所在都道府県を未検証のまま自動推定しないこと。",
+  "groups": [
+    {
+      "name": "北海道言友会",
+      "area": "北海道・東北",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "岩手言友会",
+      "area": "北海道・東北",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "宮城言友会",
+      "area": "北海道・東北",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "山形言友会",
+      "area": "北海道・東北",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "ふくしま言友会",
+      "area": "北海道・東北",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "茨城言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "栃木言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "群馬言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "埼玉言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "千葉言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "東京言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "よこはま言友会",
+      "area": "関東",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "にいがた言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "富山言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "石川言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "福井言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "やまなし言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "信州言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "岐阜言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "しずおか言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "名古屋言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "どーもわーく",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "豊橋言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "三重言友会",
+      "area": "中部",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "京都言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "すたっと京都",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "おおさか結言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "神戸言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "姫路言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "奈良言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "滋賀言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "和歌山言友会",
+      "area": "関西",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "島根言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "岡山言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "広島言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "山口言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "香川言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "徳島言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "愛媛言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "高知言友会",
+      "area": "中国・四国",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "福岡言友会",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "北九州言友会",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "さがんすた",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "熊本言友会",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "大分言友会",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "言友会 宮崎の「わ」",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    },
+    {
+      "name": "かごしま言友会",
+      "area": "九州・沖縄",
+      "source_url": "https://www.zengenren.org/加盟団体一覧/",
+      "source_checked_on": "2026-11-24",
+      "individual_site_verified": false,
+      "meeting_schedule_verified": false,
+      "contact_details_verified": false,
+      "public_label": "全国言友会連絡協議会の加盟団体一覧に掲載"
+    }
+  ]
+}

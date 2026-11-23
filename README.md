@@ -46,6 +46,18 @@ Vercel の「Settings → Environment Variables」に `.env.example` と同じ�
 いちばん新しい月のテーマが「今月の集会」になり、住民はそのテーマにだけ語りを置けます。
 過去のテーマはアーカイブとして残り、削除できません。
 
+## 吃音情報ガイド（/guide）
+
+登録しなくても読める公開ページです。データは `content/guide/` の JSON から描画しています。
+元の資料は `kitsuon_info_guide/`（CONTENT_GUIDE.md・IMPLEMENT_FOR_CLAUDE.md。リポジトリには入れていません）。
+
+- 情報源を足す・直すときは `resources.json` を編集し、出典を確かめた日を `verified_on` に入れる。
+  `status` が `reviewed` 以外のものは「要確認」と表示される。
+- `groups.json` の `area` は加盟団体一覧の地域区分で、所在地ではない。開催日・連絡先・団体のサイトは未確認のため、
+  団体ごとのリンクは出さず、全国言友会連絡協議会の一覧ページへ案内している。県別ページは個別に確かめてから作る。
+- 書籍（/guide/books）は書誌情報を確かめるまで準備中（noindex、sitemap にも載せない）。
+- リンク切れの定期確認はまだ仕組みがない。2026-11-24 時点では13件すべて開けることを確認した。
+
 ## 構成
 
 ```
@@ -58,7 +70,7 @@ src/components/ui.module.css  画面の部品のスタイル（DESIGN_SYSTEM.md 
 src/app/globals.css   色・書体と、入力欄などの土台
 src/lib/firebase/     Firestore の読み書き
 src/lib/auth/         ログイン状態（AuthProvider）
-content/guide.ts      吃音情報ガイドのデータ（掲載前にリンクと内容を確認し、最終確認日を入れる）
+content/guide/        吃音情報ガイドのデータ（resources.json・groups.json と各ページの文章）
 scripts/              seed.ts（サンプルデータ。本番には入れない）、set-admin.ts（管理者の付与）
 tests/                セキュリティルールのテスト
 ```
