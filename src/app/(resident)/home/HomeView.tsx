@@ -1,16 +1,19 @@
 "use client";
 
-// ホーム（試作品の V.home）。図書館の新着は第6段階で追加する
+// ホーム（試作品の V.home）
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { bookExcerpt } from "@/components/BookCard";
+import { BookCover } from "@/components/BookCover";
 import { MapIcon } from "@/components/icons";
 import { ResidentCard } from "@/components/ResidentCard";
 import { VillageIllustration } from "@/components/VillageIllustration";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { listBooks } from "@/lib/firebase/books";
 import { countThemePosts, getCurrentThemeId, getTheme } from "@/lib/firebase/meeting";
 import { listResidents } from "@/lib/firebase/users";
 import { formatThemeMonth } from "@/lib/format";
-import type { Theme, UserProfile } from "@/lib/types";
+import type { Book, Theme, UserProfile } from "@/lib/types";
 
 export function HomeView() {
   const { user, profile } = useAuth();
@@ -38,6 +41,15 @@ export function HomeView() {
     };
   }, []);
 
+  // 図書館に新しく並んだ本
+  const [latestBook, setLatestBook] = useState<Book | null>(null);
+  useEffect(() => {
+    listBooks(null, 1).then(
+      (p) => setLatestBook(p.books[0] ?? null),
+      () => {},
+    );
+  }, []);
+
   return (
     <>
       <VillageIllustration />
@@ -59,6 +71,23 @@ export function HomeView() {
             <span className="small muted">
               {meeting.count ? `${meeting.count}件の語りが置かれています` : "まだ語りはありません。最初に語ってみませんか"}
             </span>
+          </Link>
+        )}
+        {latestBook && (
+          <Link href={`/library/${latestBook.id}`} className="card">
+            <span className="eyebrow">図書館に新しく並んだ本</span>
+            <div className="book-row">
+              <BookCover title={latestBook.title} />
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
+                <b>『{latestBook.title}』</b>
+                {latestBook.bookAuthor && <span className="small muted">{latestBook.bookAuthor}</span>}
+                {bookExcerpt(latestBook) && (
+                  <span className="small clamp">
+                    {latestBook.authorNickname}さん：{bookExcerpt(latestBook)}
+                  </span>
+                )}
+              </div>
+            </div>
           </Link>
         )}
         {newcomers.length > 0 && (

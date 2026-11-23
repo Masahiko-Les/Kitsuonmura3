@@ -1,5 +1,5 @@
 import type { Timestamp } from "firebase/firestore";
-import type { AgeGroup } from "./constants";
+import type { AgeGroup, BookTag } from "./constants";
 
 /** users/{uid} */
 export type UserProfile = {
@@ -68,3 +68,39 @@ export type MeetingPost = AuthorFields & {
 /** 共感の対象。post＝集会の語り、book＝図書館の本、history＝吃音史（id は住民の uid） */
 export type ReactionType = "post" | "book" | "history";
 export type ReactionTarget = { type: ReactionType; id: string };
+
+/** books/{bookId}。5つの問いはすべて任意 */
+export type Book = AuthorFields & {
+  id: string;
+  title: string;
+  bookAuthor: string;
+  tag: BookTag;
+  struggle: string;
+  encounter: string;
+  words: string;
+  thought: string;
+  change: string;
+  reactionCount: number;
+  createdAt: Timestamp | null;
+};
+
+export type BookInput = Pick<Book, "title" | "bookAuthor" | "tag" | "struggle" | "encounter" | "words" | "thought" | "change">;
+
+/** 本棚の5つの問い（入力欄と詳細の見出し） */
+export const BOOK_QUESTIONS: { key: keyof Pick<Book, "struggle" | "encounter" | "words" | "thought" | "change">; heading: string; question: string; hint?: string }[] = [
+  { key: "struggle", heading: "抱えていた苦労や悩み", question: "どのような苦労や悩みを抱えていましたか" },
+  { key: "encounter", heading: "この本との出会い", question: "どのようにこの本と出会いましたか" },
+  {
+    key: "words",
+    heading: "支えになった考え方や言葉",
+    question: "どのような考え方や言葉に支えられましたか",
+    hint: "本文の長い引用は避け、あなたの言葉で書いてください。",
+  },
+  { key: "thought", heading: "読んで考えたこと", question: "読んで、どのようなことを考えましたか" },
+  {
+    key: "change",
+    heading: "自分の中で変わったこと",
+    question: "生き方や考え方に、変化はありましたか",
+    hint: "「大きな変化はなかった」も、大切な体験です。",
+  },
+];

@@ -163,16 +163,34 @@ service cloud.firestore {
 
     // ---- 集会 ----
 
-    // テーマ。書き込みは管理者のみ（管理画面は第8段階）
-    match /themes/{themeId} {
-      allow read: if isResident();
-      allow write: if isAdmin();
+    // テーマ。ID は月（"2026-11"）。書き込みは管理者のみ。
+    // 過去の集会はアーカイブとしてすべて読めるようにするため、削除はできない
+    function validTheme(themeId, d) {
+      return d.keys().hasOnly(['month', 'title', 'description', 'createdAt'])
+        && themeId.matches('^[0-9]{4}-(0[1-9]|1[0-2])$')
+        && d.month == themeId
+        && d.title is string && d.title.size() >= 1 && d.title.size() <= 100
+        && str(d.description, 500)
+        && d.createdAt is timestamp;
     }
 
-    // 今月のテーマがどれか（currentThemeId）。テーマを追加するとき管理者が更新する
+    match /themes/{themeId} {
+      allow read: if isResident();
+      allow create: if isAdmin() && validTheme(themeId, request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if isAdmin() && validTheme(themeId, request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    // 今月のテーマがどれか（currentThemeId）。テーマを追加するとき管理者が同じ書き込みで更新する
     match /config/meeting {
       allow read: if isResident();
-      allow write: if isAdmin();
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['currentThemeId'])
+        && request.resource.data.currentThemeId is string
+        && existsAfter(docPath('themes/' + request.resource.data.currentThemeId));
+      allow delete: if false;
     }
 
     function postKeys() {
@@ -211,6 +229,52 @@ service cloud.firestore {
       allow update: if isResident()
         && resource.data.authorUid != request.auth.uid
         && reactionCountChange('post', postId, 'reactionCount');
+
+      allow delete: if isResident() && resource.data.authorUid == request.auth.uid;
+    }
+
+    // ---- 図書館 books/{bookId} ----
+
+    function bookTags() {
+      return ['吃音', '勇気', '孤独', '仕事', '人生の意味', '自己理解', '夢・挑戦'];
+    }
+
+    function bookKeys() {
+      return ['authorUid', 'authorNickname', 'authorAgeGroup', 'title', 'bookAuthor', 'tag',
+              'struggle', 'encounter', 'words', 'thought', 'change', 'reactionCount', 'createdAt'];
+    }
+
+    match /books/{bookId} {
+      allow read: if isResident();
+
+      // 書名は必須。5つの問いはどれも任意で、各2,000字まで
+      allow create: if isResident()
+        && request.resource.data.keys().hasOnly(bookKeys())
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() >= 1
+        && request.resource.data.title.size() <= 60
+        && str(request.resource.data.bookAuthor, 40)
+        && request.resource.data.tag in bookTags()
+        && str(request.resource.data.struggle, 2000)
+        && str(request.resource.data.encounter, 2000)
+        && str(request.resource.data.words, 2000)
+        && str(request.resource.data.thought, 2000)
+        && str(request.resource.data.change, 2000)
+        && request.resource.data.reactionCount == 0
+        && request.resource.data.createdAt == request.time
+        && authorMatches(request.resource.data);
+
+      // 書き手本人：複製した名前だけを直せる
+      allow update: if isResident()
+        && resource.data.authorUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authorNickname', 'authorAgeGroup'])
+        && authorMatches(request.resource.data);
+
+      // ほかの住民：共感の件数だけを±1
+      allow update: if isResident()
+        && resource.data.authorUid != request.auth.uid
+        && reactionCountChange('book', bookId, 'reactionCount');
 
       allow delete: if isResident() && resource.data.authorUid == request.auth.uid;
     }

@@ -79,7 +79,7 @@ export async function listResidents(pageSize: number, after?: QueryDocumentSnaps
 }
 
 /** 書き手のニックネーム・年代を複製して持っているコレクション */
-const AUTHORED_COLLECTIONS = ["meetingPosts"];
+const AUTHORED_COLLECTIONS = ["meetingPosts", "books"];
 
 /**
  * 住民票の編集を保存する。

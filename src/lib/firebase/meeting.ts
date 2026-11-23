@@ -2,6 +2,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getCountFromServer,
   getDoc,
@@ -12,6 +13,7 @@ import {
   serverTimestamp,
   startAfter,
   where,
+  writeBatch,
   type DocumentData,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
@@ -71,4 +73,33 @@ export function createMeetingPost(themeId: string, text: string, me: UserProfile
     reactionCount: 0,
     createdAt: serverTimestamp(),
   });
+}
+
+/** 自分の語りをすべて、新しい順に */
+export async function listMyPosts(uid: string) {
+  const s = await getDocs(
+    query(collection(firestore(), "meetingPosts"), where("authorUid", "==", uid), orderBy("createdAt", "desc")),
+  );
+  return s.docs.map(toPost);
+}
+
+export function deleteMeetingPost(id: string) {
+  return deleteDoc(doc(firestore(), "meetingPosts", id));
+}
+
+/**
+ * テーマを追加する（管理者のみ。ルールでも確かめる）。
+ * いちばん新しい月のテーマなら、同じ書き込みで「今月の集会」に切り替える。
+ */
+export async function addTheme(input: { month: string; title: string; description: string }) {
+  const db = firestore();
+  const ref = doc(db, "themes", input.month);
+  if ((await getDoc(ref)).exists()) throw new Error("theme-exists");
+  const current = await getCurrentThemeId();
+  const batch = writeBatch(db);
+  batch.set(ref, { ...input, createdAt: serverTimestamp() });
+  const becomesCurrent = !current || input.month > current;
+  if (becomesCurrent) batch.set(doc(db, "config", "meeting"), { currentThemeId: input.month });
+  await batch.commit();
+  return { becomesCurrent };
 }
