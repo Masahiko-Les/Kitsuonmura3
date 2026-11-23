@@ -1,0 +1,310 @@
+/*
+  ver2 の試作用スタイル。kitsuon_village_handoff/docs/DESIGN_SYSTEM.md の提案値に従う。
+  このファイルのクラスは /ver2 の中でだけ使い、既存の吃音村の画面には影響させない。
+*/
+.root {
+  --v2-bg: #faf9f5;
+  --v2-surface: #ffffff;
+  --v2-muted-surface: #eef1e9;
+  --v2-text: #38483f;
+  --v2-text-muted: #79857c;
+  --v2-brand: #537363;
+  --v2-border: #e5e7df;
+  --v2-reaction: #a66f68;
+  --v2-body: system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  --v2-display: var(--font-zen-old-mincho), "Hiragino Mincho ProN", serif;
+
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--v2-bg);
+  color: var(--v2-text);
+  font-family: var(--v2-body);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* デモであることの帯 */
+.demoBar {
+  background: var(--v2-muted-surface);
+  color: var(--v2-text);
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 6px 16px;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+}
+.logo {
+  font-family: var(--v2-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.headerLink {
+  font-size: 14px;
+  color: var(--v2-brand);
+  font-weight: 700;
+  padding: 8px 4px;
+}
+.back {
+  font-size: 14px;
+  color: var(--v2-brand);
+  padding: 8px 0;
+}
+.pageTitle {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.main {
+  flex: 1;
+  padding: 4px 18px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.withNav {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+.hero {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--v2-muted-surface);
+}
+
+.h1 {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+}
+.h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0;
+}
+.lead {
+  font-size: 16px;
+  line-height: 1.9;
+  margin: 0;
+}
+.muted {
+  color: var(--v2-text-muted);
+}
+.small {
+  font-size: 13px;
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: var(--v2-surface);
+  border: 1px solid var(--v2-border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: inherit;
+}
+.cardMuted {
+  composes: card;
+  background: var(--v2-muted-surface);
+  border-color: transparent;
+}
+.cardLabel {
+  font-size: 13px;
+  color: var(--v2-text-muted);
+}
+.cardTitle {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font: inherit;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 13px 20px;
+  border: 1px solid var(--v2-brand);
+  background: var(--v2-brand);
+  color: #fff;
+  cursor: pointer;
+}
+.btnGhost {
+  composes: btn;
+  background: transparent;
+  color: var(--v2-brand);
+}
+.textLink {
+  color: var(--v2-brand);
+  font-weight: 700;
+  text-align: center;
+  padding: 8px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--v2-muted-surface);
+  color: var(--v2-brand);
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+  background: var(--v2-muted-surface);
+  color: var(--v2-brand);
+  font-weight: 700;
+}
+.name {
+  font-weight: 700;
+}
+.meta {
+  font-size: 12px;
+  color: var(--v2-text-muted);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 長文の読み物 */
+.prose {
+  font-size: 16px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* 共感ボタン。件数は出さず、押したことを本人にだけ示す */
+.react {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--v2-border);
+  background: var(--v2-bg);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--v2-text-muted);
+  cursor: pointer;
+}
+.react svg {
+  width: 16px;
+  height: 16px;
+}
+.reactOn {
+  composes: react;
+  color: var(--v2-reaction);
+  border-color: var(--v2-reaction);
+}
+
+.note {
+  font-size: 13px;
+  line-height: 1.7;
+  background: var(--v2-muted-surface);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.list {
+  margin: 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 14px;
+  font-weight: 700;
+}
+.hint {
+  font-size: 12px;
+  color: var(--v2-text-muted);
+}
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 14px;
+}
+.check input {
+  width: auto;
+  margin-top: 6px;
+}
+
+/* 下部タブ */
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--v2-surface);
+  border-top: 1px solid var(--v2-border);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 10;
+}
+.navItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 0 10px;
+  font-size: 11px;
+  color: var(--v2-text-muted);
+}
+.navItem svg {
+  width: 22px;
+  height: 22px;
+}
+.navOn {
+  composes: navItem;
+  color: var(--v2-brand);
+  font-weight: 700;
+}

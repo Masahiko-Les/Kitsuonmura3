@@ -1,0 +1,31 @@
+{
+  "_notice": "すべて架空のサンプルデータです。公開時に実在住民の投稿として使用しないでください。",
+  "site": {
+    "name": "吃音村",
+    "tagline": "吃音を抱えているのは、あなた一人ではない。",
+    "welcome": "ようこそ、吃音村へ。ここには、あなたと同じように吃音を抱えながら生きる人たちがいます。たくさん語っても、何も語らずに過ごしてもかまいません。どうぞ、あなたのペースで。"
+  },
+  "residents": [
+    {"id":"demo-haru","nickname":"はる","emoji":"🌿","age_band":"30代","occupation":"会社員","tags":["自己紹介","電話","職場"],"intro":"吃音があっても、自分らしく生きていきたい。最近は散歩と読書が好きです。","history":"小学生の頃から吃音があります。自分の名前を言えないことが一番つらく、自己紹介のある日は学校に行くのが嫌でした。社会人になってからも電話に苦労していますが、少しずつ周りに自分の苦手なことを伝えるようになりました。今も悩むことはあります。でも、吃音だけが自分のすべてではないと思えるようになりました。"},
+    {"id":"demo-minato","nickname":"みなと","emoji":"⛵","age_band":"20代","occupation":"大学生","tags":["自己紹介","就職活動"],"intro":"就職活動中。いつか自分の好きな仕事に就きたいです。","history":"大学での発表や面接が苦手です。同じ苦労を抱えて働いている人の話を読んでみたいと思っています。吃音があってもできることを、少しずつ増やしていきたいです。"},
+    {"id":"demo-komorebi","nickname":"こもれび","emoji":"☕","age_band":"40代","occupation":"福祉関係","tags":["電話","職場","人間関係"],"intro":"人と関わる仕事をしています。吃音とは長い付き合いです。","history":"若い頃は吃音がなくなることばかりを考えていました。今は、吃音があっても人と関われることを大切にしています。うまく話せない日もありますが、相手の話に耳を傾けることはできると思っています。"}
+  ],
+  "meeting_topics": [
+    {"id":"demo-topic-nov","month_label":"11月","title":"吃音があっても、挑戦してみたいことはありますか？","description":"解決策や立派な答えは必要ありません。あなたの思いを自由に語ってください。","is_sample":true},
+    {"id":"demo-topic-oct","month_label":"10月","title":"自分の名前を言うときの苦労","description":"自分の経験を自由に語ってください。","is_sample":true},
+    {"id":"demo-topic-sep","month_label":"9月","title":"職場での電話について","description":"自分の経験を自由に語ってください。","is_sample":true}
+  ],
+  "meeting_posts": [
+    {"id":"demo-post-1","topic_id":"demo-topic-nov","author_id":"demo-haru","body":"以前から一人旅に挑戦したいと思っていました。旅先での注文や宿の受付が怖くて、なかなか踏み出せませんでした。来年は、吃音が出てもいいと思いながら、知らない町へ行ってみたいです。"},
+    {"id":"demo-post-2","topic_id":"demo-topic-nov","author_id":"demo-minato","body":"人前で話す仕事に興味があります。吃音があるから無理だとずっと思っていましたが、まずは自分の気持ちを大事にしてみたいです。"},
+    {"id":"demo-post-3","topic_id":"demo-topic-oct","author_id":"demo-haru","body":"名前の最初の音が出なくて、自己紹介が本当に苦手でした。何年経っても緊張はしますが、最近は少し待ってもらうようにしています。"}
+  ],
+  "book_stories": [
+    {"id":"demo-book-1","author_id":"demo-haru","heading":"自分のことばかり考えていた頃","struggle_or_dream":"吃音が出るたびに自分を責め、人と会うことが怖くなっていました。","book_title":"幸福論","book_author":"バートランド・ラッセル","reading_experience":"この本を読んで、自分の内面だけではなく、外の世界にも関心を向けてみたいと思いました。すぐに変われたわけではありませんが、少しずつ散歩や趣味を楽しめるようになりました。"},
+    {"id":"demo-book-2","author_id":"demo-komorebi","heading":"苦しさを否定せずに生きる","struggle_or_dream":"自分の苦労をなかなか人に話すことができず、孤独を感じていました。","book_title":"悲しみの秘義","book_author":"若松英輔","reading_experience":"悲しみについて考える時間が、自分の経験を静かに受け止めるきっかけになりました。苦しさが消えたわけではありませんが、自分の人生を以前より丁寧に考えるようになりました。"}
+  ],
+  "guide_resources": [
+    {"name":"全国言友会連絡協議会","category":"自助グループ","official_url":"https://www.zengenren.org/","verification_status":"公開前に要再確認"},
+    {"name":"日本吃音・流暢性障害学会","category":"研究・学術","official_url":"https://jssfd.org/","verification_status":"公開前に要再確認"}
+  ]
+}
