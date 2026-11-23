@@ -2,8 +2,9 @@
 
 吃音当事者のためのオンライン自助グループ「吃音村」のWebアプリです。
 
-- 仕様：[docs/開発指示書.md](docs/開発指示書.md)
-- 画面・文言・デザインの基準：[docs/prototype.html](docs/prototype.html)（ブラウザで直接開けます）
+- 仕様：引き継ぎパック `kitsuon_village_handoff/`（CLAUDE.md・docs/PRODUCT_SPEC.md・docs/DESIGN_SYSTEM.md・docs/SECURITY_AND_DATA.md）。
+  参考画像を含むため、このリポジトリには入れていません。
+- 以前の仕様と試作品：[docs/開発指示書.md](docs/開発指示書.md)、[docs/prototype.html](docs/prototype.html)（2026-11-23 に引き継ぎパックの仕様へ置き換え）
 
 ## 開発
 
@@ -48,13 +49,23 @@ Vercel の「Settings → Environment Variables」に `.env.example` と同じ�
 ## 構成
 
 ```
-src/app/(public)/     公開エリア（ログイン不要・検索エンジンに公開）
-src/app/(resident)/   住民限定エリア（ログイン必須・noindex・下部タブあり）
-src/components/       共通コンポーネント（村のイラスト、下部タブ、上部バー、トースト、確認ダイアログ）
+src/app/(public)/     公開エリア：トップ、吃音村について、情報ガイド、歓迎、住民登録、ログイン、
+                      パスワード再設定、住民票の案内（/onboarding）
+src/app/app/          住民限定エリア（/app。ログイン必須・noindex・下部タブ）：
+                      ホーム、住民票、集会、図書館、自分、集会テーマの管理（/app/admin/themes）
+src/components/       共通の部品（上部、下部タブ、村のイラスト、共感ボタン、確認ダイアログ、トースト）
+src/components/ui.module.css  画面の部品のスタイル（DESIGN_SYSTEM.md に従う）
+src/app/globals.css   色・書体と、入力欄などの土台
 src/lib/firebase/     Firestore の読み書き
 src/lib/auth/         ログイン状態（AuthProvider）
-scripts/              seed.ts（サンプルデータ）、set-admin.ts（管理者の付与）
+content/guide.ts      吃音情報ガイドのデータ（掲載前にリンクと内容を確認し、最終確認日を入れる）
+scripts/              seed.ts（サンプルデータ。本番には入れない）、set-admin.ts（管理者の付与）
 tests/                セキュリティルールのテスト
-content/guide.ts      吃音情報ガイドのデータ（URL・情報源・最終確認日はここで更新）
-src/app/globals.css   デザイントークン（試作品の :root を移植）と共通クラス
 ```
+
+## 作っていないもの（仕様にあり、これから）
+
+- 通報と運営による非表示・削除（SECURITY_AND_DATA.md）。本格的な公開の前に必要です。
+- 退会とデータの削除、メールアドレスの変更。
+- 図書館の物語の書き直し（集会の語りは書き直せます）。
+- 利用規約・プライバシーポリシー・運営者の連絡先。

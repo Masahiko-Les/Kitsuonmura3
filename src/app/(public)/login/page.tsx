@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { TopBar } from "@/components/TopBar";
+import { Header } from "@/components/Header";
+import s from "@/components/ui.module.css";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = { title: "ログイン", robots: { index: false } };
 
-export default function LoginPage() {
+export default function Login() {
   return (
     <>
-      <TopBar title="住民の方はこちら" back />
-      <div className="pad">
-        <p>おかえりなさい。メールアドレスとパスワードで村に入れます。</p>
+      <Header kind="back" href="/" title="ログイン" />
+      <main className={s.main}>
+        {/* ログイン後の移動先（?next=）を読むため Suspense で包む */}
         <Suspense>
           <LoginForm />
         </Suspense>
-      </div>
+      </main>
     </>
   );
 }

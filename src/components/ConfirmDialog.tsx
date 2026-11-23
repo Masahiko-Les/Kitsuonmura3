@@ -3,6 +3,7 @@
 // 確認ダイアログ（試作品の ask()）。ネイティブの <dialog> を使い、フォーカス管理とEscキーをブラウザに任せる
 import { useEffect, useLayoutEffect, useRef } from "react";
 import styles from "./ConfirmDialog.module.css";
+import ui from "./ui.module.css";
 
 type Props = {
   open: boolean;
@@ -59,10 +60,10 @@ export function ConfirmDialog({
     >
       <p>{message}</p>
       <div className={styles.row}>
-        <button ref={cancelRef} type="button" className="btn ghost" onClick={onCancel}>
+        <button ref={cancelRef} type="button" className={ui.btnGhost} onClick={onCancel}>
           {cancelLabel}
         </button>
-        <button type="button" className={`btn ${danger ? "danger" : ""}`} onClick={onConfirm}>
+        <button type="button" className={danger ? ui.btnDanger : ui.btn} onClick={onConfirm}>
           {confirmLabel}
         </button>
       </div>

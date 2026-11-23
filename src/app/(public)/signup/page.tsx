@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { TopBar } from "@/components/TopBar";
+import { Header } from "@/components/Header";
+import s from "@/components/ui.module.css";
 import { SignupForm } from "./SignupForm";
 
-export const metadata: Metadata = { title: "住民票をつくる", robots: { index: false } };
+export const metadata: Metadata = { title: "住民登録", robots: { index: false } };
 
-// 新規登録（試作品の V.register）
-export default function SignupPage() {
+export default function Signup() {
   return (
     <>
-      <TopBar title="住民票をつくる" back />
-      <div className="pad">
-        <p>まずは、呼び名と年代だけで大丈夫です。吃音のことや吃音史は、あとからいつでも書き足せます。</p>
+      <Header kind="back" href="/" title="住民登録" />
+      <main className={s.main}>
+        <p className={s.lead}>登録に必要なのは、メールアドレス・パスワード・ニックネームだけです。実名は要りません。</p>
         <SignupForm />
-      </div>
+      </main>
     </>
   );
 }

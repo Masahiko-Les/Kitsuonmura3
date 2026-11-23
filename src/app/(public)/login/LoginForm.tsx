@@ -1,17 +1,19 @@
 "use client";
 
+// ログイン。ログインしたら ?next= のページ（なければ村のホーム）へ
 import { signInWithEmailAndPassword } from "firebase/auth";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
+import s from "@/components/ui.module.css";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { authErrorMessage } from "@/lib/auth/errors";
 import { firebaseAuth } from "@/lib/firebase/client";
 import { useHydrated } from "@/lib/useHydrated";
 
-/** ログイン後の移動先。外部サイトへの移動を防ぐため、サイト内のパスだけを許す */
+/** ログイン後の移動先。外部サイトへの移動を防ぐため、村の中のパスだけを許す */
 function safeNext(next: string | null) {
-  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/home";
+  return next && next.startsWith("/app") ? next : "/app";
 }
 
 export function LoginForm() {
@@ -43,25 +45,28 @@ export function LoginForm() {
 
   return (
     <form method="post" onSubmit={onSubmit}>
-      <div className="field">
+      <div className={s.field}>
         <label htmlFor="l-mail">メールアドレス</label>
-        <input id="l-mail" name="email" type="email" required autoComplete="email" />
+        <input id="l-mail" name="email" type="email" autoComplete="email" required />
       </div>
-      <div className="field">
+      <div className={s.field}>
         <label htmlFor="l-pass">パスワード</label>
-        <input id="l-pass" name="password" type="password" required autoComplete="current-password" />
+        <input id="l-pass" name="password" type="password" autoComplete="current-password" required />
       </div>
       {error && (
-        <p className="error" role="alert">
+        <p className={s.error} role="alert">
           {error}
         </p>
       )}
-      <button className="btn block" disabled={busy || !hydrated}>
-        {busy ? "確認しています…" : "村に入る"}
+      <button className={s.btn} disabled={busy || !hydrated}>
+        {busy ? "ログインしています…" : "ログイン"}
       </button>
-      <p className="small muted" style={{ textAlign: "center" }}>
-        はじめての方は <Link href="/welcome" style={{ color: "var(--green)", fontWeight: 700 }}>こちら</Link>
-      </p>
+      <Link href="/reset-password" className={s.textLink}>
+        パスワードを忘れた方
+      </Link>
+      <Link href="/welcome" className={s.textLink}>
+        はじめての方はこちら
+      </Link>
     </form>
   );
 }

@@ -29,7 +29,7 @@ import {
 let env: RulesTestEnvironment;
 
 const EMPTY = {
-  region: "", job: "", features: "", onset: "", hardSounds: "", hardWords: "", hardScenes: "",
+  intro: "", region: "", job: "", features: "", onset: "", hardSounds: "", hardWords: "", hardScenes: "",
   struggles: "", tips: "", hobbies: "", challenges: "", history: "",
 };
 const profile = (nickname: string) => ({
@@ -73,8 +73,8 @@ beforeEach(async () => {
       text: "語り", reactionCount: 0, createdAt: past,
     });
     await setDoc(doc(db, "books", "b1"), {
-      authorUid: "alice", authorNickname: "あおい", authorAgeGroup: "30代", title: "本", bookAuthor: "", tag: "勇気",
-      struggle: "", encounter: "", words: "", thought: "", change: "", reactionCount: 0, createdAt: past,
+      authorUid: "alice", authorNickname: "あおい", authorAgeGroup: "30代", heading: "見出し", title: "本", bookAuthor: "",
+      struggle: "", words: "", change: "", reactionCount: 0, createdAt: past,
     });
   });
 });
@@ -91,6 +91,11 @@ describe("users（住民票）", () => {
     await assertFails(setDoc(doc(as("carol"), "users", "dave"), profile("x")));
     await assertFails(setDoc(doc(as("dave"), "users", "dave"), { ...profile("x"), historyReactionCount: 3 }));
     await assertFails(setDoc(doc(as("dave"), "users", "dave"), { ...profile("x"), admin: true }));
+  });
+  test("ひとこと自己紹介は200字まで。ない住民票（旧形式）も編集できる", async () => {
+    const ref = doc(as("alice"), "users", "alice");
+    await assertSucceeds(updateDoc(ref, { intro: "あ".repeat(200), updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(ref, { intro: "あ".repeat(201), updatedAt: serverTimestamp() }));
   });
   test("吃音史は10,000字まで", async () => {
     const ref = doc(as("alice"), "users", "alice");
@@ -128,8 +133,11 @@ describe("集会", () => {
     await assertFails(addDoc(collection(as("bob"), "meetingPosts"), post({ authorUid: "alice" })));
     await assertFails(addDoc(collection(as("bob"), "meetingPosts"), post({ authorNickname: "別人" })));
   });
-  test("本文は編集できず、削除は本人のみ", async () => {
-    await assertFails(updateDoc(doc(as("alice"), "meetingPosts", "p1"), { text: "x" }));
+  test("本文を書き直せるのは本人だけ。削除も本人のみ", async () => {
+    await assertSucceeds(updateDoc(doc(as("alice"), "meetingPosts", "p1"), { text: "書き直し", updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(as("bob"), "meetingPosts", "p1"), { text: "x", updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(as("alice"), "meetingPosts", "p1"), { themeId: "2026-10", updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(doc(as("alice"), "meetingPosts", "p1"), { text: "あ".repeat(5001), updatedAt: serverTimestamp() }));
     await assertFails(deleteDoc(doc(as("bob"), "meetingPosts", "p1")));
     await assertSucceeds(deleteDoc(doc(as("alice"), "meetingPosts", "p1")));
   });
@@ -166,16 +174,17 @@ describe("テーマと今月の集会（管理者のみ）", () => {
 
 describe("図書館", () => {
   const book = (o: Record<string, unknown> = {}) => ({
-    authorUid: "bob", authorNickname: "みなと", authorAgeGroup: "30代", title: "夜と霧", bookAuthor: "", tag: "人生の意味",
-    struggle: "", encounter: "", words: "", thought: "", change: "", reactionCount: 0, createdAt: serverTimestamp(), ...o,
+    authorUid: "bob", authorNickname: "みなと", authorAgeGroup: "30代", heading: "生きる意味を探していた頃", title: "夜と霧",
+    bookAuthor: "", struggle: "", words: "", change: "", reactionCount: 0, createdAt: serverTimestamp(), ...o,
   });
   test("本棚に置ける", async () => {
     await assertSucceeds(addDoc(collection(as("bob"), "books"), book()));
   });
-  test("書名は必須で60字まで、テーマは選択肢から", async () => {
+  test("見出しと書名は必須で60字まで、決まった項目だけ", async () => {
+    await assertFails(addDoc(collection(as("bob"), "books"), book({ heading: "" })));
     await assertFails(addDoc(collection(as("bob"), "books"), book({ title: "" })));
     await assertFails(addDoc(collection(as("bob"), "books"), book({ title: "あ".repeat(61) })));
-    await assertFails(addDoc(collection(as("bob"), "books"), book({ tag: "その他" })));
+    await assertFails(addDoc(collection(as("bob"), "books"), book({ tag: "勇気" })));
   });
   test("削除は本人のみ", async () => {
     await assertFails(deleteDoc(doc(as("bob"), "books", "b1")));

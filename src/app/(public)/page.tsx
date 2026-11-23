@@ -1,84 +1,63 @@
+// 公開トップ（DESIGN_SYSTEM.md「公開トップ」）
 import Link from "next/link";
-import { BookIcon, CardIcon, MapIcon, TalkIcon } from "@/components/icons";
-import { VillageIllustration } from "@/components/VillageIllustration";
+import { Header } from "@/components/Header";
+import { Hero } from "@/components/Hero";
+import s from "@/components/ui.module.css";
 import { publicMetadata } from "@/lib/metadata";
+
+const FEATURES = [
+  { title: "住民票", text: "住民一人ひとりの人生と、吃音とともに歩んできた吃音史を読めます。書くかどうかは自由です。" },
+  { title: "集会", text: "毎月ひとつのテーマについて語ります。返信やアドバイスはなく、語りっぱなし・聴きっぱなしの場です。" },
+  { title: "図書館", text: "苦労や夢と、それを支えてくれた本との体験を残す本棚です。" },
+];
 
 export const metadata = publicMetadata({
   description:
-    "吃音者の、吃音者による、吃音者のための小さな村。吃音を抱えながら生きてきた人たちが集まり、互いの存在を感じ、苦労を語り、支え合うオンライン自助グループです。",
+    "吃音者の、吃音者による、吃音者のためのオンライン自助コミュニティ。声を出さなくても、言葉を交わせる。互いの人生に触れ、支え合える場所です。",
   path: "/",
 });
 
-// 公開トップ（試作品の V.public）
-export default function PublicTop() {
+export default function Top() {
   return (
     <>
-      <VillageIllustration preload />
-      <div className="pad">
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <h1 className="pub-h">吃音村</h1>
-          <p className="display" style={{ fontSize: 17, lineHeight: 1.8 }}>
-            吃音者の、吃音者による、吃音者のための小さな村。
-          </p>
-          <p className="muted">
-            吃音を抱えながら生きてきた人たちが集まり、互いの存在を感じ、苦労を語り、支え合う場所です。
-          </p>
+      <Header right={{ href: "/login", label: "ログイン" }} />
+      <main className={s.main}>
+        <Hero preload />
+        <div className={s.stack}>
+          <h1 className={s.h1}>吃音を抱えているのは、あなた一人ではない。</h1>
+          <p className={s.lead}>声を出さなくても、言葉を交わせる。互いの人生に触れ、支え合える場所。</p>
         </div>
-        <Link href="/welcome" className="btn block">
-          はじめて村を訪れる
-        </Link>
-        <Link href="/login" className="btn ghost block">
-          住民の方はこちら
-        </Link>
-
-        <h2 className="sec">吃音村でできること</h2>
-        <div className="card">
-          <div className="feature">
-            <span className="ic">
-              <CardIcon />
-            </span>
-            <div>
-              <b>住民票</b>
-              <p className="small muted">同じ苦労を抱えながら生きている人たちの人生と、吃音史を読めます。</p>
-            </div>
-          </div>
-          <div className="feature">
-            <span className="ic">
-              <TalkIcon />
-            </span>
-            <div>
-              <b>毎月の集会</b>
-              <p className="small muted">毎月のテーマについて、言いっぱなし・聞きっぱなしで語り合います。</p>
-            </div>
-          </div>
-          <div className="feature">
-            <span className="ic">
-              <BookIcon />
-            </span>
-            <div>
-              <b>図書館</b>
-              <p className="small muted">苦しいときに支えになった本と、その物語が並ぶ本棚です。</p>
-            </div>
-          </div>
+        <div className={s.stack}>
+          <Link href="/welcome" className={s.btn}>
+            村の住民になる
+          </Link>
+          <Link href="/login" className={s.btnGhost}>
+            すでに住民の方はこちら
+          </Link>
+          <Link href="/guide" className={s.textLink}>
+            登録せずに吃音の情報を探す
+          </Link>
         </div>
-
-        <h2 className="sec">登録しなくても読めます</h2>
-        <Link href="/guide" className="card">
-          <div className="feature">
-            <span className="ic">
-              <MapIcon />
-            </span>
-            <div>
-              <b>吃音情報ガイド</b>
-              <p className="small muted">全国の言友会や自助グループ、相談先、研究機関の情報をまとめています。</p>
+        <section className={s.section}>
+          <h2 className={s.h2}>村でできること</h2>
+          {FEATURES.map((f) => (
+            <div key={f.title} className={s.card}>
+              <span className={s.cardTitle}>{f.title}</span>
+              <p className={`${s.small} ${s.muted}`}>{f.text}</p>
             </div>
-          </div>
-        </Link>
-        <Link href="/about" className="card">
-          <b>吃音村について</b>
-          <p className="small muted">この村が大切にしていること</p>
-        </Link>
-      </div>
+          ))}
+        </section>
+        <section className={s.section}>
+          <h2 className={s.h2}>吃音情報ガイド</h2>
+          <Link href="/guide" className={s.cardMuted}>
+            <span className={s.cardTitle}>自助グループや相談先を探す</span>
+            <span className={`${s.small} ${s.muted}`}>登録しなくても読めます</span>
+          </Link>
+          <Link href="/about" className={s.textLink}>
+            吃音村について
+          </Link>
+        </section>
+      </main>
     </>
   );
 }

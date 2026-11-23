@@ -5,6 +5,8 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth/AuthProvider";
+import { Loading } from "./Status";
+import s from "./ui.module.css";
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const { loading, user, isResident, loggedOut } = useAuth();
@@ -19,11 +21,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   if (loading || !isResident) {
     return (
-      <div className="pad">
-        <p className="muted small" role="status">
-          読み込んでいます…
-        </p>
-      </div>
+      <main className={s.main}>
+        <Loading />
+      </main>
     );
   }
   return <>{children}</>;

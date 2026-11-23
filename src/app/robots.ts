@@ -3,8 +3,7 @@
 import type { MetadataRoute } from "next";
 import { ALLOW_INDEXING, SITE_URL } from "@/lib/metadata";
 
-// /ver2 は架空データの試作なので、検索エンジンに載せない
-const RESIDENT_PATHS = ["/home", "/residents", "/meeting", "/library", "/me", "/admin", "/ver2"];
+const RESIDENT_PATHS = ["/app"];
 
 export default function robots(): MetadataRoute.Robots {
   // 本番ドメインをつなぐまでは、すべてクロールさせない

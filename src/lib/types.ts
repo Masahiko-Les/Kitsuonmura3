@@ -1,11 +1,13 @@
 import type { Timestamp } from "firebase/firestore";
-import type { AgeGroup, BookTag } from "./constants";
+import type { AgeGroup } from "./constants";
 
 /** users/{uid} */
 export type UserProfile = {
   uid: string;
   nickname: string;
   ageGroup: AgeGroup;
+  /** ひとことの自己紹介（一覧に出る） */
+  intro: string;
   region: string;
   job: string;
   features: string;
@@ -27,6 +29,7 @@ export type UserProfile = {
 export type EditableProfile = Omit<UserProfile, "uid" | "historyReactionCount" | "createdAt" | "updatedAt">;
 
 export const EMPTY_PROFILE_FIELDS = {
+  intro: "",
   region: "",
   job: "",
   features: "",
@@ -69,38 +72,29 @@ export type MeetingPost = AuthorFields & {
 export type ReactionType = "post" | "book" | "history";
 export type ReactionTarget = { type: ReactionType; id: string };
 
-/** books/{bookId}。5つの問いはすべて任意 */
+/** books/{bookId}。苦労・夢 × 本 × 変化の物語（PRODUCT_SPEC.md §7）。書名と見出し以外は任意 */
 export type Book = AuthorFields & {
   id: string;
+  /** 物語の見出し */
+  heading: string;
+  /** 本の書名 */
   title: string;
   bookAuthor: string;
-  tag: BookTag;
+  /** 悩み・苦労、または夢 */
   struggle: string;
-  encounter: string;
+  /** 支えられた考え方 */
   words: string;
-  thought: string;
+  /** 自分の考えや変化 */
   change: string;
   reactionCount: number;
   createdAt: Timestamp | null;
 };
 
-export type BookInput = Pick<Book, "title" | "bookAuthor" | "tag" | "struggle" | "encounter" | "words" | "thought" | "change">;
+export type BookInput = Pick<Book, "heading" | "title" | "bookAuthor" | "struggle" | "words" | "change">;
 
-/** 本棚の5つの問い（入力欄と詳細の見出し） */
-export const BOOK_QUESTIONS: { key: keyof Pick<Book, "struggle" | "encounter" | "words" | "thought" | "change">; heading: string; question: string; hint?: string }[] = [
-  { key: "struggle", heading: "抱えていた苦労や悩み", question: "どのような苦労や悩みを抱えていましたか" },
-  { key: "encounter", heading: "この本との出会い", question: "どのようにこの本と出会いましたか" },
-  {
-    key: "words",
-    heading: "支えになった考え方や言葉",
-    question: "どのような考え方や言葉に支えられましたか",
-    hint: "本文の長い引用は避け、あなたの言葉で書いてください。",
-  },
-  { key: "thought", heading: "読んで考えたこと", question: "読んで、どのようなことを考えましたか" },
-  {
-    key: "change",
-    heading: "自分の中で変わったこと",
-    question: "生き方や考え方に、変化はありましたか",
-    hint: "「大きな変化はなかった」も、大切な体験です。",
-  },
+/** 本の物語の問い（入力欄と詳細の見出し） */
+export const BOOK_QUESTIONS: { key: "struggle" | "words" | "change"; heading: string; hint?: string }[] = [
+  { key: "struggle", heading: "悩み・苦労、または夢" },
+  { key: "words", heading: "支えられた考え方", hint: "本文の長い引用は避け、あなたの言葉で書いてください。" },
+  { key: "change", heading: "自分の考えや変化", hint: "変わらなかった経験も、大切な物語です。" },
 ];

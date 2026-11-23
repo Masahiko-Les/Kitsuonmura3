@@ -43,7 +43,7 @@ service cloud.firestore {
     }
 
     function profileKeys() {
-      return ['nickname', 'ageGroup', 'region', 'job', 'features', 'onset',
+      return ['nickname', 'ageGroup', 'intro', 'region', 'job', 'features', 'onset',
               'hardSounds', 'hardWords', 'hardScenes', 'struggles', 'tips',
               'hobbies', 'challenges', 'history',
               'historyReactionCount', 'createdAt', 'updatedAt'];
@@ -54,6 +54,8 @@ service cloud.firestore {
       return d.keys().hasOnly(profileKeys())
         && d.nickname is string && d.nickname.size() >= 1 && d.nickname.size() <= 20
         && d.ageGroup in ageGroups()
+        // ひとことの自己紹介は後から加えた項目なので、ない住民票もある
+        && (!('intro' in d) || str(d.intro, 200))
         && str(d.region, 200) && str(d.job, 200) && str(d.features, 200)
         && str(d.onset, 200) && str(d.hardSounds, 200) && str(d.hardWords, 200)
         && str(d.hardScenes, 200) && str(d.hobbies, 200) && str(d.challenges, 200)
@@ -194,7 +196,7 @@ service cloud.firestore {
     }
 
     function postKeys() {
-      return ['themeId', 'authorUid', 'authorNickname', 'authorAgeGroup', 'text', 'reactionCount', 'createdAt'];
+      return ['themeId', 'authorUid', 'authorNickname', 'authorAgeGroup', 'text', 'reactionCount', 'createdAt', 'updatedAt'];
     }
 
     // 投稿に複製している書き手のニックネーム・年代が、住民票と一致しているか。
@@ -219,11 +221,20 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time
         && authorMatches(request.resource.data);
 
-      // 書き手本人：ニックネーム・年代を変えたときに、複製した名前だけを直せる（本文は編集しない）
+      // 書き手本人：ニックネーム・年代を変えたときに、複製した名前だけを直せる
       allow update: if isResident()
         && resource.data.authorUid == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['authorNickname', 'authorAgeGroup'])
         && authorMatches(request.resource.data);
+
+      // 書き手本人：本文を書き直せる（PRODUCT_SPEC.md §6）
+      allow update: if isResident()
+        && resource.data.authorUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text', 'updatedAt'])
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 1
+        && request.resource.data.text.size() <= 5000
+        && request.resource.data.updatedAt == request.time;
 
       // ほかの住民：共感の件数だけを±1
       allow update: if isResident()
@@ -233,33 +244,29 @@ service cloud.firestore {
       allow delete: if isResident() && resource.data.authorUid == request.auth.uid;
     }
 
-    // ---- 図書館 books/{bookId} ----
-
-    function bookTags() {
-      return ['吃音', '勇気', '孤独', '仕事', '人生の意味', '自己理解', '夢・挑戦'];
-    }
+    // ---- 図書館 books/{bookId}（苦労・夢 × 本 × 変化の物語） ----
 
     function bookKeys() {
-      return ['authorUid', 'authorNickname', 'authorAgeGroup', 'title', 'bookAuthor', 'tag',
-              'struggle', 'encounter', 'words', 'thought', 'change', 'reactionCount', 'createdAt'];
+      return ['authorUid', 'authorNickname', 'authorAgeGroup', 'heading', 'title', 'bookAuthor',
+              'struggle', 'words', 'change', 'reactionCount', 'createdAt'];
     }
 
     match /books/{bookId} {
       allow read: if isResident();
 
-      // 書名は必須。5つの問いはどれも任意で、各2,000字まで
+      // 見出しと書名は必須。問いはどれも任意で、各2,000字まで
       allow create: if isResident()
         && request.resource.data.keys().hasOnly(bookKeys())
         && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.heading is string
+        && request.resource.data.heading.size() >= 1
+        && request.resource.data.heading.size() <= 60
         && request.resource.data.title is string
         && request.resource.data.title.size() >= 1
         && request.resource.data.title.size() <= 60
         && str(request.resource.data.bookAuthor, 40)
-        && request.resource.data.tag in bookTags()
         && str(request.resource.data.struggle, 2000)
-        && str(request.resource.data.encounter, 2000)
         && str(request.resource.data.words, 2000)
-        && str(request.resource.data.thought, 2000)
         && str(request.resource.data.change, 2000)
         && request.resource.data.reactionCount == 0
         && request.resource.data.createdAt == request.time

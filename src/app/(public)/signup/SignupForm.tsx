@@ -1,24 +1,21 @@
 "use client";
 
+// 住民登録。メール・パスワード・ニックネームと、村の約束への同意だけで登録できる。
+// 年代などはあとから住民票で書ける（登録時は「答えない」にしておく）。
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { useToast } from "@/components/Toast";
+import s from "@/components/ui.module.css";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { authErrorMessage } from "@/lib/auth/errors";
-import { AGE_GROUPS, LIMITS, REQUIRE_EMAIL_VERIFICATION, type AgeGroup } from "@/lib/constants";
+import { LIMITS, REQUIRE_EMAIL_VERIFICATION } from "@/lib/constants";
 import { firebaseAuth } from "@/lib/firebase/client";
-import { useHydrated } from "@/lib/useHydrated";
 import { createProfile } from "@/lib/firebase/users";
-
-export const WELCOME_TOAST = "住民票ができました。ようこそ、吃音村へ。";
-/** メール確認後に歓迎のトーストを出すための目印 */
-export const WELCOME_PENDING_KEY = "kitsuonmura:welcome-pending";
+import { useHydrated } from "@/lib/useHydrated";
 
 export function SignupForm() {
   const router = useRouter();
-  const toast = useToast();
   const { loading, isResident } = useAuth();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -27,7 +24,7 @@ export function SignupForm() {
 
   // すでに住民なら村に入る（登録処理の途中は、登録側で移動させる）
   useEffect(() => {
-    if (!loading && isResident && !submitting.current) router.replace("/home");
+    if (!loading && isResident && !submitting.current) router.replace("/app");
   }, [loading, isResident, router]);
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -36,7 +33,6 @@ export function SignupForm() {
     const email = String(fd.get("email") ?? "").trim();
     const password = String(fd.get("password") ?? "");
     const nickname = String(fd.get("nickname") ?? "").trim();
-    const ageGroup = String(fd.get("ageGroup") ?? "") as AgeGroup;
     if (!nickname) {
       setError("ニックネームを入力してください。");
       return;
@@ -46,14 +42,12 @@ export function SignupForm() {
     submitting.current = true;
     try {
       const cred = await createUserWithEmailAndPassword(firebaseAuth(), email, password);
-      await createProfile(cred.user.uid, nickname, ageGroup);
+      await createProfile(cred.user.uid, nickname, "答えない");
       if (REQUIRE_EMAIL_VERIFICATION) {
-        await sendEmailVerification(cred.user, { url: `${window.location.origin}/verify-email` });
-        localStorage.setItem(WELCOME_PENDING_KEY, "1");
+        await sendEmailVerification(cred.user, { url: `${window.location.origin}/onboarding` });
         router.replace("/verify-email");
       } else {
-        router.replace("/home");
-        toast(WELCOME_TOAST);
+        router.replace("/onboarding");
       }
     } catch (err) {
       submitting.current = false;
@@ -64,41 +58,47 @@ export function SignupForm() {
 
   return (
     <form method="post" onSubmit={onSubmit}>
-      <div className="field">
+      <div className={s.field}>
         <label htmlFor="r-mail">メールアドレス</label>
-        <input id="r-mail" name="email" type="email" required autoComplete="email" />
-        <span className="hint">ログインに使います。ほかの住民には表示されません。</span>
+        <input id="r-mail" name="email" type="email" autoComplete="email" required />
+        <span className={s.hint}>ほかの住民には表示されません。</span>
       </div>
-      <div className="field">
+      <div className={s.field}>
         <label htmlFor="r-pass">パスワード</label>
-        <input id="r-pass" name="password" type="password" required minLength={8} autoComplete="new-password" />
-        <span className="hint">8文字以上</span>
+        <input id="r-pass" name="password" type="password" autoComplete="new-password" minLength={8} required />
+        <span className={s.hint}>8文字以上</span>
       </div>
-      <div className="field">
+      <div className={s.field}>
         <label htmlFor="r-nick">ニックネーム</label>
-        <input id="r-nick" name="nickname" required maxLength={LIMITS.nickname} placeholder="例：うみかぜ" />
-        <span className="hint">本名でなくて構いません。</span>
+        <input id="r-nick" name="nickname" maxLength={LIMITS.nickname} required />
+        <span className={s.hint}>住民票や語りに表示されます。あとから変えられます。</span>
       </div>
-      <div className="field">
-        <label htmlFor="r-age">年代</label>
-        <select id="r-age" name="ageGroup" defaultValue={AGE_GROUPS[0]}>
-          {AGE_GROUPS.map((a) => (
-            <option key={a}>{a}</option>
-          ))}
-        </select>
+      <div className={s.note}>
+        <ul className={s.list}>
+          <li>村は登録した住民だけが読めますが、画面の撮影などによる外への流出を完全には防げません。</li>
+          <li>吃音の治療や改善を約束する場所ではありません。</li>
+        </ul>
       </div>
-      <p className="note">住民票は、登録した住民だけが読めます。検索エンジンには公開されません。</p>
+      <label className={s.check}>
+        <input type="checkbox" name="agree" required />
+        <span>
+          <Link href="/about" className={s.headerLink} style={{ padding: 0 }}>
+            村の約束
+          </Link>
+          を読み、同意します
+        </span>
+      </label>
       {error && (
-        <p className="error" role="alert">
+        <p className={s.error} role="alert">
           {error}
         </p>
       )}
-      <button className="btn block" disabled={busy || !hydrated}>
-        {busy ? "住民票をつくっています…" : "村に入る"}
+      <button className={s.btn} disabled={busy || !hydrated}>
+        {busy ? "登録しています…" : "住民登録する"}
       </button>
-      <p className="small muted" style={{ textAlign: "center" }}>
-        すでに住民の方は <Link href="/login" style={{ color: "var(--green)", fontWeight: 700 }}>ログイン</Link>
-      </p>
+      <Link href="/login" className={s.textLink}>
+        すでに住民の方はこちら
+      </Link>
     </form>
   );
 }

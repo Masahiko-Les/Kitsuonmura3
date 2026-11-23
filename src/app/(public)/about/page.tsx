@@ -1,31 +1,45 @@
-import { TopBar } from "@/components/TopBar";
+// 吃音村について（理念・参加は任意・村の約束）。文言は PRODUCT_SPEC.md / SECURITY_AND_DATA.md から
+import { Header } from "@/components/Header";
 import { publicMetadata } from "@/lib/metadata";
+import s from "@/components/ui.module.css";
 
 export const metadata = publicMetadata({
   title: "吃音村について",
-  description:
-    "吃音を抱えているのは、自分一人ではない。吃音村は、吃音を抱えて生きる人たちが互いの存在を知り、苦労を語り、他者の人生に触れ、希望を見いだしていく場所です。",
+  description: "吃音村がなぜあるのか、参加のしかた、村の約束について。",
   path: "/about",
 });
 
-// 吃音村について（試作品の V.about）
-export default function AboutPage() {
+export default function About() {
   return (
     <>
-      <TopBar title="吃音村について" back />
-      <div className="pad">
-        <h2 className="display" style={{ fontSize: 22 }}>
-          吃音を抱えているのは、自分一人ではない。
-        </h2>
-        <p className="prose" style={{ fontSize: 15 }}>
-          {`吃音村は、吃音を抱えて生きる人たちが、互いの存在を知り、自分の苦労を語り、他者の人生に触れ、希望を見いだしていく場所です。
-
-吃音を治すことだけを目指すのではなく、吃音を抱えながらも、自分の人生を豊かにしていくことを大切にします。
-
-自分が経験してきた苦労が、別の誰かの支えになる。先人たちが残した語りや読書体験が、後から来る当事者に希望を届ける。住民一人ひとりの人生が、少しずつ村の財産になっていきます。`}
+      <Header kind="back" href="/" title="吃音村について" />
+      <main className={s.main}>
+        <section className={s.section}>
+          <h2 className={s.h2}>なぜこの村があるのか</h2>
+          <p className={s.prose}>
+            吃音者の、吃音者による、吃音者のためのオンライン自助コミュニティです。
+            いちばん届けたいのは、「吃音を抱えているのは自分一人ではない」という感覚です。
+          </p>
+        </section>
+        <section className={s.section}>
+          <h2 className={s.h2}>参加のしかたは自由です</h2>
+          <p className={s.prose}>
+            たくさん語っても、何も語らずに過ごしてもかまいません。住民票の項目も、ニックネーム以外はすべて任意です。
+          </p>
+        </section>
+        <section className={s.section}>
+          <h2 className={s.h2}>村の約束</h2>
+          <ul className={s.list}>
+            <li>集会には返信やアドバイスはありません。語りっぱなし、聴きっぱなしの場です。</li>
+            <li>反応の数を競うことはしません。</li>
+            <li>村で読んだ住民の語りを、村の外に持ち出さないでください。</li>
+            <li>吃音の治療や改善を約束する場所ではありません。医療の相談は専門の窓口へ。</li>
+          </ul>
+        </section>
+        <p className={s.note}>
+          この「村の約束」はまだ案の段階です。利用規約・プライバシーポリシーは本格的な公開の前に整えます。
         </p>
-        <p className="note">吃音村は医療機関ではなく、治療効果を保証するサービスでもありません。</p>
-      </div>
+      </main>
     </>
   );
 }

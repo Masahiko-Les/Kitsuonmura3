@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { TopBar } from "@/components/TopBar";
+import { Header } from "@/components/Header";
+import s from "@/components/ui.module.css";
 import { VerifyEmail } from "./VerifyEmail";
 
 export const metadata: Metadata = { title: "メールアドレスの確認", robots: { index: false } };
 
-// メール確認を必須にしているとき（NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION=true）に使う画面
-export default function VerifyEmailPage() {
+// メール確認を必須にしたとき（NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION=true）に使う画面
+export default function Page() {
   return (
     <>
-      <TopBar title="メールアドレスの確認" />
-      <div className="pad">
+      <Header />
+      <main className={s.main}>
         <VerifyEmail />
-      </div>
+      </main>
     </>
   );
 }

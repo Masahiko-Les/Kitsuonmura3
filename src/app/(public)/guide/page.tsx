@@ -1,43 +1,50 @@
-import Link from "next/link";
-import { GUIDE } from "@content/guide";
-import { ChevIcon } from "@/components/icons";
-import { TopBar } from "@/components/TopBar";
+// 公開の吃音情報ガイド。登録しなくても読める（PRODUCT_SPEC.md §8）
+import { GUIDE_CATEGORIES, GUIDE_RESOURCES } from "@content/guide";
+import { Header } from "@/components/Header";
+import s from "@/components/ui.module.css";
+import { formatIsoDate } from "@/lib/format";
 import { publicMetadata } from "@/lib/metadata";
 
 export const metadata = publicMetadata({
   title: "吃音情報ガイド",
-  description:
-    "全国の言友会や吃音の自助グループ、医療・相談窓口、子どもの吃音と保護者向けの情報、学会・研究機関を、どんな人に向いているかと一緒にまとめています。",
+  description: "吃音の自助グループ、相談先、研究機関など、吃音に関する情報の案内です。登録しなくても読めます。",
   path: "/guide",
 });
 
-// 吃音情報ガイドの一覧。カテゴリごとに掲載先の名前を見せ、詳しくはカテゴリページで読む
-export default function GuidePage() {
+export default function Guide() {
   return (
     <>
-      <TopBar title="吃音情報ガイド" back />
-      <div className="pad">
-        <p>吃音に関する団体や相談先を、どんな人に向いているかと一緒にまとめています。このページは登録しなくても読めます。</p>
-        <p className="note">掲載内容は、各団体の公式情報で確認しながら順次更新しています。情報源と最終確認日は各項目に記載します。</p>
-        <div className="list">
-          {GUIDE.map((c) => (
-            <Link key={c.slug} href={`/guide/${c.slug}`} className="card">
-              <div className="archive-row">
-                <h2 className="display" style={{ fontSize: 17 }}>
-                  {c.name}
-                </h2>
-                <ChevIcon />
-              </div>
-              <p className="small muted">{c.description}</p>
-              <ul className="small" style={{ margin: 0, paddingLeft: "1.2em", lineHeight: 1.8 }}>
-                {c.items.map((it) => (
-                  <li key={it.name}>{it.name}</li>
-                ))}
-              </ul>
-            </Link>
+      <Header kind="back" href="/" title="吃音情報ガイド" />
+      <main className={s.main}>
+        <p className={s.lead}>登録しなくても読める、吃音に関する情報の案内です。</p>
+        <section className={s.section}>
+          <h2 className={s.h2}>カテゴリー</h2>
+          <div className={s.tags}>
+            {GUIDE_CATEGORIES.map((c) => (
+              <span key={c} className={s.tag}>
+                {c}
+              </span>
+            ))}
+          </div>
+          <p className={`${s.small} ${s.muted}`}>カテゴリーごとの案内は、掲載する情報を確認しながら増やしていきます。</p>
+        </section>
+        <section className={s.section}>
+          <h2 className={s.h2}>掲載している情報</h2>
+          {GUIDE_RESOURCES.map((g) => (
+            <div key={g.name} className={s.card}>
+              <span className={s.cardLabel}>{g.category}</span>
+              <span className={s.cardTitle}>{g.name}</span>
+              <p className={s.small}>{g.summary}</p>
+              <a href={g.url} target="_blank" rel="noopener noreferrer" className={s.small} style={{ color: "var(--brand)" }}>
+                公式サイト：{g.url}
+              </a>
+              <span className={`${s.small} ${s.muted}`}>
+                {g.checkedAt ? `最終確認日：${formatIsoDate(g.checkedAt)}` : "掲載内容は確認中です"}
+              </span>
+            </div>
           ))}
-        </div>
-      </div>
+        </section>
+      </main>
     </>
   );
 }

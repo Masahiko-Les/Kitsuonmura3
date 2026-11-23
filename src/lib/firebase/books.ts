@@ -1,4 +1,4 @@
-// 図書館：books/{bookId}
+// 図書館：books/{bookId}（苦労・夢 × 本 × 変化の物語）
 import {
   addDoc,
   collection,
@@ -16,7 +16,6 @@ import {
   type DocumentSnapshot,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
-import type { BookTag } from "../constants";
 import type { Book, BookInput, UserProfile } from "../types";
 import { firestore } from "./client";
 
@@ -24,11 +23,10 @@ type Cursor = QueryDocumentSnapshot<DocumentData> | null;
 
 function toBook(d: DocumentSnapshot<DocumentData>): Book {
   return {
+    heading: "",
     bookAuthor: "",
     struggle: "",
-    encounter: "",
     words: "",
-    thought: "",
     change: "",
     reactionCount: 0,
     createdAt: null,
@@ -37,12 +35,9 @@ function toBook(d: DocumentSnapshot<DocumentData>): Book {
   } as Book;
 }
 
-/** 新しく置かれた順に。tag を渡すとそのテーマだけ */
-export async function listBooks(tag: BookTag | null, pageSize: number, after?: Cursor) {
-  const col = collection(firestore(), "books");
-  const base = tag
-    ? query(col, where("tag", "==", tag), orderBy("createdAt", "desc"))
-    : query(col, orderBy("createdAt", "desc"));
+/** 新しく置かれた順に */
+export async function listBooks(pageSize: number, after?: Cursor) {
+  const base = query(collection(firestore(), "books"), orderBy("createdAt", "desc"));
   const s = await getDocs(after ? query(base, startAfter(after), limit(pageSize)) : query(base, limit(pageSize)));
   return {
     books: s.docs.map(toBook),

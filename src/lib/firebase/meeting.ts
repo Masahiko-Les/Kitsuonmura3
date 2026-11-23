@@ -12,6 +12,7 @@ import {
   query,
   serverTimestamp,
   startAfter,
+  updateDoc,
   where,
   writeBatch,
   type DocumentData,
@@ -81,6 +82,16 @@ export async function listMyPosts(uid: string) {
     query(collection(firestore(), "meetingPosts"), where("authorUid", "==", uid), orderBy("createdAt", "desc")),
   );
   return s.docs.map(toPost);
+}
+
+/** 自分の語りを書き直す */
+export function updateMeetingPost(id: string, text: string) {
+  return updateDoc(doc(firestore(), "meetingPosts", id), { text, updatedAt: serverTimestamp() });
+}
+
+export async function getMeetingPost(id: string) {
+  const s = await getDoc(doc(firestore(), "meetingPosts", id));
+  return s.exists() ? ({ reactionCount: 0, createdAt: null, ...s.data(), id: s.id } as MeetingPost) : null;
 }
 
 export function deleteMeetingPost(id: string) {
