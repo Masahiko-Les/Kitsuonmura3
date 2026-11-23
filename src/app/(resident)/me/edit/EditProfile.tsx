@@ -6,14 +6,13 @@ import { useState, type FormEvent } from "react";
 import { useToast } from "@/components/Toast";
 import { TopBar } from "@/components/TopBar";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { AGE_GROUPS, LIMITS, type AgeGroup } from "@/lib/constants";
+import { AGE_GROUPS, LIMITS, PREFECTURES, type AgeGroup } from "@/lib/constants";
 import { updateProfile } from "@/lib/firebase/users";
 import type { EditableProfile, UserProfile } from "@/lib/types";
 
 type TextKey = Exclude<keyof EditableProfile, "ageGroup" | "nickname" | "history">;
 
 const SHORT: { key: TextKey; label: string; placeholder?: string; hint?: string }[] = [
-  { key: "region", label: "居住地域", placeholder: "例：神奈川県" },
   { key: "job", label: "職業やこれまでの経験", placeholder: "例：会社員（営業職）" },
   { key: "features", label: "吃音の特徴", placeholder: "例：最初の音が出にくい" },
   { key: "onset", label: "吃音が始まった時期", placeholder: "例：小学2年生ごろ" },
@@ -122,6 +121,19 @@ function EditForm({ profile }: { profile: UserProfile }) {
             <select id="e-ageGroup" name="ageGroup" defaultValue={profile.ageGroup}>
               {AGE_GROUPS.map((a) => (
                 <option key={a}>{a}</option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="e-region">居住地域</label>
+            <select id="e-region" name="region" defaultValue={profile.region}>
+              <option value="">選ばない</option>
+              {/* 以前に自由記述で入れた値は、選び直すまで残す */}
+              {profile.region && !(PREFECTURES as readonly string[]).includes(profile.region) && (
+                <option value={profile.region}>{profile.region}</option>
+              )}
+              {PREFECTURES.map((p) => (
+                <option key={p}>{p}</option>
               ))}
             </select>
           </div>
