@@ -7,6 +7,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { authErrorMessage } from "@/lib/auth/errors";
 import { firebaseAuth } from "@/lib/firebase/client";
+import { useHydrated } from "@/lib/useHydrated";
 
 /** ログイン後の移動先。外部サイトへの移動を防ぐため、サイト内のパスだけを許す */
 function safeNext(next: string | null) {
@@ -19,6 +20,7 @@ export function LoginForm() {
   const { loading, user, isResident } = useAuth();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const hydrated = useHydrated();
 
   useEffect(() => {
     if (loading || !user) return;
@@ -40,7 +42,7 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form method="post" onSubmit={onSubmit}>
       <div className="field">
         <label htmlFor="l-mail">メールアドレス</label>
         <input id="l-mail" name="email" type="email" required autoComplete="email" />
@@ -54,7 +56,7 @@ export function LoginForm() {
           {error}
         </p>
       )}
-      <button className="btn block" disabled={busy}>
+      <button className="btn block" disabled={busy || !hydrated}>
         {busy ? "確認しています…" : "村に入る"}
       </button>
       <p className="small muted" style={{ textAlign: "center" }}>

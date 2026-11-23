@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { authErrorMessage } from "@/lib/auth/errors";
 import { AGE_GROUPS, LIMITS, REQUIRE_EMAIL_VERIFICATION, type AgeGroup } from "@/lib/constants";
 import { firebaseAuth } from "@/lib/firebase/client";
+import { useHydrated } from "@/lib/useHydrated";
 import { createProfile } from "@/lib/firebase/users";
 
 export const WELCOME_TOAST = "住民票ができました。ようこそ、吃音村へ。";
@@ -21,6 +22,7 @@ export function SignupForm() {
   const { loading, isResident } = useAuth();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const hydrated = useHydrated();
   const submitting = useRef(false);
 
   // すでに住民なら村に入る（登録処理の途中は、登録側で移動させる）
@@ -61,7 +63,7 @@ export function SignupForm() {
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form method="post" onSubmit={onSubmit}>
       <div className="field">
         <label htmlFor="r-mail">メールアドレス</label>
         <input id="r-mail" name="email" type="email" required autoComplete="email" />
@@ -91,7 +93,7 @@ export function SignupForm() {
           {error}
         </p>
       )}
-      <button className="btn block" disabled={busy}>
+      <button className="btn block" disabled={busy || !hydrated}>
         {busy ? "住民票をつくっています…" : "村に入る"}
       </button>
       <p className="small muted" style={{ textAlign: "center" }}>
