@@ -29,6 +29,16 @@ Firestore のセキュリティルールは `firestore.rules`、複合インデ�
 開発中はメール確認を無効にしています。本番前に `.env` の `NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION=true` と、
 `firestore.rules` の `requireEmailVerification()` を `true` にしてください。
 
+## 公開（Vercel）
+
+GitHub の main に push すると、Vercel が自動でビルド・公開します。
+Vercel の「Settings → Environment Variables」に `.env.example` と同じ変数を入れてください
+（`NEXT_PUBLIC_` の値はビルド時に埋め込まれるので、変えたら再デプロイが必要です）。
+
+- `NEXT_PUBLIC_ALLOW_INDEXING` は本番ドメインをつなぐまで `false`（サイト全体を noindex・クロール禁止にする）。
+- kitsuonmura.com をつなぐときは、`NEXT_PUBLIC_SITE_URL` と `NEXT_PUBLIC_ALLOW_INDEXING=true` を設定し、
+  Firebase コンソールの Authentication →「設定」→「承認済みドメイン」にドメインを追加する。
+
 ## 集会のテーマ
 
 テーマは管理者だけが `/admin/themes` で追加できます（管理者の自分ページにも入口が出ます）。

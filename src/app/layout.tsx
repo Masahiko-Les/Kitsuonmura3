@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Zen_Kaku_Gothic_New, Zen_Old_Mincho } from "next/font/google";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/lib/auth/AuthProvider";
-import { SITE_URL } from "@/lib/metadata";
+import { ALLOW_INDEXING, SITE_URL } from "@/lib/metadata";
 import "./globals.css";
 
 // 日本語フォントはサブセットのプリロードができないため preload: false にする
@@ -28,6 +28,8 @@ export const metadata: Metadata = {
     default: "吃音村｜吃音を抱えて生きる人たちのオンライン自助グループ",
     template: "%s｜吃音村",
   },
+  // 本番ドメインをつなぐまではサイト全体を検索結果に出さない（NEXT_PUBLIC_ALLOW_INDEXING）
+  ...(ALLOW_INDEXING ? {} : { robots: { index: false, follow: false } }),
   description:
     "吃音者の、吃音者による、吃音者のための小さな村。吃音を抱えながら生きてきた人たちが集まり、互いの存在を感じ、苦労を語り、支え合うオンライン自助グループです。",
 };

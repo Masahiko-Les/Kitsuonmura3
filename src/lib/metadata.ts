@@ -5,6 +5,12 @@ import type { Metadata } from "next";
 export const SITE_NAME = "吃音村";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kitsuonmura.com";
 
+/**
+ * 検索エンジンに載せてよいか。本番ドメインをつなぐまでは false にしておき、
+ * *.vercel.app などの仮のアドレスが検索結果に出ないようにする。
+ */
+export const ALLOW_INDEXING = process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true";
+
 type Options = {
   /** ページ名。省略するとサイト既定のタイトルになる */
   title?: string;
