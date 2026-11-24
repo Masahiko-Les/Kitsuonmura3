@@ -49,7 +49,7 @@ export function LibraryView() {
       <main className={`${s.main} ${s.withNav}`}>
         <div className={s.stack}>
           <h1 className={s.h2}>図書館</h1>
-          <p className={s.muted}>村人の苦労や夢と、それを支えた本の物語です。</p>
+          <p className={s.muted}>村人たちの心を支えてきた本とそのエピソードを大切に保管してあります。</p>
         </div>
         <Link href="/app/library/new" className={s.btn}>
           本の物語を残す
