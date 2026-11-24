@@ -51,17 +51,17 @@ export function HomeView() {
           <Link href="/app/meeting" className={s.cardMuted}>
             <span className={s.cardLabel}>今月の集会のテーマ</span>
             <span className={s.cardTitle}>{theme ? `“${theme.title}”` : "今月のテーマを見る"}</span>
-            <span className={s.muted}>村人たちの語りを読む</span>
+            <span className={s.muted} style={{ textAlign: "right" }}>村人たちの語りを読む</span>
           </Link>
           <Link href="/app/library" className={s.cardMuted}>
             <span className={s.cardLabel}>図書館</span>
             <span className={s.cardTitle}>村人の人生を支えた本</span>
-            <span className={s.muted}>苦労と読書の物語に触れる</span>
+            <span className={s.muted} style={{ textAlign: "right" }}>苦労と読書の物語に触れる</span>
           </Link>
           <Link href="/app/residents" className={s.cardMuted}>
             <span className={s.cardLabel}>住民票</span>
             <span className={s.cardTitle}>村で暮らす人たち</span>
-            <span className={s.muted}>それぞれの吃音史を読む</span>
+            <span className={s.muted} style={{ textAlign: "right" }}>それぞれの吃音史を読む</span>
           </Link>
         </div>
       </main>
