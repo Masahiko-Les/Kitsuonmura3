@@ -65,7 +65,7 @@ export function Compose() {
           <>
             {theme && (
               <div>
-                <span className={s.cardLabel}>{formatThemeMonth(theme.month)}の集会</span>
+                <span className={s.cardLabel}>{formatThemeMonth(theme.month)}の集会のテーマ</span>
                 <p className={s.cardTitle}>{theme.title}</p>
               </div>
             )}

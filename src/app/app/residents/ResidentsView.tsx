@@ -1,6 +1,7 @@
 "use client";
 
-// 住民票の一覧（自分以外の住民）。新しく村に来た順に30人ずつ
+// 住民票の一覧。いちばん上に自分の住民票、その下にほかの住民を新しく村に来た順に30人ずつ
+// （仕様は「自分以外の住民」だが、書いた本人が見当たらず戸惑うため、自分のものを先頭に出す）
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
@@ -15,7 +16,7 @@ import type { UserProfile } from "@/lib/types";
 const PAGE_SIZE = 30;
 
 export function ResidentsView() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [list, setList] = useState<{ residents: UserProfile[]; cursor: ResidentPage["cursor"] } | null>(null);
   const [error, setError] = useState(false);
   const [more, setMore] = useState(false);
@@ -50,6 +51,19 @@ export function ResidentsView() {
       <Header logoHref="/app" />
       <main className={`${s.main} ${s.withNav}`}>
         <h1 className={s.h2}>住民票</h1>
+        {profile && (
+          <section className={s.section} aria-labelledby="mine">
+            <h2 id="mine" className={`${s.small} ${s.muted}`} style={{ margin: 0, fontWeight: 400 }}>
+              あなたの住民票
+            </h2>
+            <ResidentCard r={profile} isMe />
+          </section>
+        )}
+        {profile && (
+          <h2 className={`${s.small} ${s.muted}`} style={{ margin: 0, fontWeight: 400 }}>
+            村で暮らす人たち
+          </h2>
+        )}
         {error ? (
           <LoadError what="住民票" />
         ) : !list ? (
@@ -73,11 +87,11 @@ export function ResidentsView() {
   );
 }
 
-function ResidentCard({ r }: { r: UserProfile }) {
+function ResidentCard({ r, isMe = false }: { r: UserProfile; isMe?: boolean }) {
   const tags = splitTags(r.hardScenes);
   return (
     <Link href={`/app/residents/${r.uid}`} className={s.card}>
-      <Who uid={r.uid} nickname={r.nickname} ageGroup={r.ageGroup} job={r.job} link={false} />
+      <Who uid={r.uid} nickname={r.nickname} ageGroup={r.ageGroup} job={r.job} link={false} isMe={isMe} />
       {r.intro && <p className={s.small}>{r.intro}</p>}
       {tags.length > 0 && (
         <div className={s.tags}>

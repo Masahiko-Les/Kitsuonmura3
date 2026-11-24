@@ -6,7 +6,7 @@ import type { Theme } from "@/lib/types";
 export function TopicHead({ theme }: { theme: Theme }) {
   return (
     <div className={s.cardMuted}>
-      <span className={s.cardLabel}>{formatThemeMonth(theme.month)}の集会</span>
+      <span className={s.cardLabel}>{formatThemeMonth(theme.month)}の集会のテーマ</span>
       <h1 className={s.cardTitle} style={{ margin: 0 }}>
         {theme.title}
       </h1>

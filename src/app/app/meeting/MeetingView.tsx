@@ -46,7 +46,7 @@ export function MeetingView() {
                 </Link>
                 <p className={s.note}>{MEETING_NOTE}</p>
                 <section className={s.section}>
-                  <h2 className={s.h2}>住民の語り</h2>
+                  <h2 className={s.h2}>村人たちの語り</h2>
                   <ThemePosts themeId={data.current.id} />
                 </section>
               </>
