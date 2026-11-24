@@ -15,4 +15,4 @@ export function TopicHead({ theme }: { theme: Theme }) {
   );
 }
 
-export const MEETING_NOTE = "村人たちが文章で語り、みんなの語りを読み合うための場です。返信やアドバイスはつきません。";
+export const MEETING_NOTE = "村人たちが文章で語り、みんなの語りをじっくり読み合うための場です。コメントやアドバイスはつきません。";
