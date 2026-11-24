@@ -54,7 +54,7 @@ export default function Top() {
           <h2 className={s.h2}>吃音情報まとめページ</h2>
           <Link href="/guide" className={s.cardMuted}>
             <span className={s.cardTitle}>自助グループや相談先を探す</span>
-            <span className={`${s.small} ${s.muted}`}>登録しなくても読めます</span>
+            <span className={`${s.small} ${s.muted}`}>吃音村の村人でなくても読めます</span>
           </Link>
           <Link href="/about" className={s.textLink}>
             吃音村について

@@ -15,7 +15,7 @@ export default function Goodbye() {
           <h1 className={s.h1}>退会しました。</h1>
           <p className={s.lead}>これまで吃音村で過ごしてくださって、ありがとうございました。</p>
           <p className={s.lead}>
-            吃音情報まとめページは、登録しなくてもいつでも読めます。また来たくなったら、いつでも新しく住民になれます。
+            吃音情報まとめページは、吃音村の村人でなくても、いつでも読めます。また来たくなったら、いつでも新しく住民になれます。
           </p>
         </div>
         <div className={s.stack}>
