@@ -31,7 +31,7 @@ export default function Top() {
           <p className={s.lead}>
             吃音を抱えながら生きてきた人たちが集まり、文字だけで交流し、互いに支え合う場所です。
           </p>
-          <p className={s.lead}>吃音の方は、ぜひ村人になってください。一緒に文章で語り合いましょう。</p>
+          <p className={s.lead}>吃音の方は、ぜひ村人になってください。一緒に語り合いましょう。</p>
         </div>
         <div className={s.stack}>
           <Link href="/welcome" className={s.btn}>
