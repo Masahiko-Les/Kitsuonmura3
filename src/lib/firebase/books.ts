@@ -29,15 +29,16 @@ function toBook(d: DocumentSnapshot<DocumentData>): Book {
     words: "",
     change: "",
     reactionCount: 0,
+    hidden: false,
     createdAt: null,
     ...d.data(),
     id: d.id,
   } as Book;
 }
 
-/** 新しく置かれた順に */
+/** 新しく置かれた順に。運営が非表示にしたものは除く */
 export async function listBooks(pageSize: number, after?: Cursor) {
-  const base = query(collection(firestore(), "books"), orderBy("createdAt", "desc"));
+  const base = query(collection(firestore(), "books"), where("hidden", "==", false), orderBy("createdAt", "desc"));
   const s = await getDocs(after ? query(base, startAfter(after), limit(pageSize)) : query(base, limit(pageSize)));
   return {
     books: s.docs.map(toBook),
@@ -57,6 +58,7 @@ export function createBook(input: BookInput, me: UserProfile) {
     authorNickname: me.nickname,
     authorAgeGroup: me.ageGroup,
     reactionCount: 0,
+    hidden: false,
     createdAt: serverTimestamp(),
   });
 }

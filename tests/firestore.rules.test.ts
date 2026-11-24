@@ -33,7 +33,7 @@ const EMPTY = {
   struggles: "", tips: "", hobbies: "", challenges: "", history: "",
 };
 const profile = (nickname: string) => ({
-  nickname, ageGroup: "30代", ...EMPTY, historyReactionCount: 0,
+  nickname, ageGroup: "30代", ...EMPTY, historyReactionCount: 0, hidden: false,
   createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
 });
 
@@ -70,11 +70,11 @@ beforeEach(async () => {
     await setDoc(doc(db, "config", "meeting"), { currentThemeId: "2026-11" });
     await setDoc(doc(db, "meetingPosts", "p1"), {
       themeId: "2026-11", authorUid: "alice", authorNickname: "あおい", authorAgeGroup: "30代",
-      text: "語り", reactionCount: 0, createdAt: past,
+      text: "語り", reactionCount: 0, hidden: false, createdAt: past,
     });
     await setDoc(doc(db, "books", "b1"), {
       authorUid: "alice", authorNickname: "あおい", authorAgeGroup: "30代", heading: "見出し", title: "本", bookAuthor: "",
-      struggle: "", words: "", change: "", reactionCount: 0, createdAt: past,
+      struggle: "", words: "", change: "", reactionCount: 0, hidden: false, createdAt: past,
     });
   });
 });
@@ -116,7 +116,7 @@ describe("users（住民票）", () => {
 describe("集会", () => {
   const post = (o: Record<string, unknown> = {}) => ({
     themeId: "2026-11", authorUid: "bob", authorNickname: "みなと", authorAgeGroup: "30代",
-    text: "語り", reactionCount: 0, createdAt: serverTimestamp(), ...o,
+    text: "語り", reactionCount: 0, hidden: false, createdAt: serverTimestamp(), ...o,
   });
   test("今月のテーマに語れる", async () => {
     await assertSucceeds(addDoc(collection(as("bob"), "meetingPosts"), post()));
@@ -175,7 +175,7 @@ describe("テーマと今月の集会（管理者のみ）", () => {
 describe("図書館", () => {
   const book = (o: Record<string, unknown> = {}) => ({
     authorUid: "bob", authorNickname: "みなと", authorAgeGroup: "30代", heading: "生きる意味を探していた頃", title: "夜と霧",
-    bookAuthor: "", struggle: "", words: "", change: "", reactionCount: 0, createdAt: serverTimestamp(), ...o,
+    bookAuthor: "", struggle: "", words: "", change: "", reactionCount: 0, hidden: false, createdAt: serverTimestamp(), ...o,
   });
   test("本棚に置ける", async () => {
     await assertSucceeds(addDoc(collection(as("bob"), "books"), book()));
@@ -245,4 +245,66 @@ describe("共感", () => {
       });
     });
   }
+});
+
+describe("通報と運営の非表示", () => {
+  const report = (o: Record<string, unknown> = {}) => ({
+    reporterUid: "bob", targetType: "post", targetId: "p1", reason: "attack", details: "", status: "open",
+    createdAt: serverTimestamp(), ...o,
+  });
+  const admin = () => as("root", { admin: true });
+
+  test("住民は通報を送れるが、読めない。同じものへの2回目は不可", async () => {
+    const ref = doc(as("bob"), "reports", "post_p1_bob");
+    await assertSucceeds(setDoc(ref, report()));
+    await assertFails(getDoc(ref));
+    await assertFails(setDoc(ref, report({ reason: "spam" })));
+    await assertSucceeds(getDoc(doc(admin(), "reports", "post_p1_bob")));
+  });
+  test("ID・送り主・理由・状態・対象の存在を偽れない", async () => {
+    await assertFails(setDoc(doc(as("bob"), "reports", "post_p1_x"), report()));
+    await assertFails(setDoc(doc(as("bob"), "reports", "post_p1_bob"), report({ reporterUid: "alice" })));
+    await assertFails(setDoc(doc(as("bob"), "reports", "post_p1_bob"), report({ reason: "なんとなく" })));
+    await assertFails(setDoc(doc(as("bob"), "reports", "post_p1_bob"), report({ status: "resolved" })));
+    await assertFails(setDoc(doc(as("bob"), "reports", "post_none_bob"), report({ targetId: "none" })));
+    await assertFails(setDoc(doc(anon(), "reports", "post_p1_bob"), report()));
+  });
+  test("住民票と本も通報できる", async () => {
+    await assertSucceeds(setDoc(doc(as("bob"), "reports", "profile_alice_bob"), report({ targetType: "profile", targetId: "alice" })));
+    await assertSucceeds(setDoc(doc(as("bob"), "reports", "book_b1_bob"), report({ targetType: "book", targetId: "b1" })));
+  });
+  test("対応済みにできるのは運営だけ", async () => {
+    await seed((db) => setDoc(doc(db, "reports", "post_p1_bob"), { ...report(), createdAt: past }));
+    await assertFails(updateDoc(doc(as("bob"), "reports", "post_p1_bob"), { status: "resolved", resolvedAt: serverTimestamp() }));
+    await assertSucceeds(updateDoc(doc(admin(), "reports", "post_p1_bob"), { status: "resolved", resolvedAt: serverTimestamp() }));
+    await assertFails(deleteDoc(doc(admin(), "reports", "post_p1_bob")));
+  });
+  test("運営は語りを非表示にでき、ほかの住民には見えなくなる", async () => {
+    await assertFails(updateDoc(doc(as("bob"), "meetingPosts", "p1"), { hidden: true }));
+    await assertFails(updateDoc(doc(as("alice"), "meetingPosts", "p1"), { hidden: true }));
+    await assertFails(updateDoc(doc(admin(), "meetingPosts", "p1"), { hidden: true, text: "x" }));
+    await assertSucceeds(updateDoc(doc(admin(), "meetingPosts", "p1"), { hidden: true }));
+    await assertFails(getDoc(doc(as("bob"), "meetingPosts", "p1")));
+    await assertSucceeds(getDoc(doc(as("alice"), "meetingPosts", "p1")));
+    await assertSucceeds(getDoc(doc(admin(), "meetingPosts", "p1")));
+    // 一覧は hidden == false で絞らないと拒否される
+    await assertFails(getDocs(query(collection(as("bob"), "meetingPosts"), where("themeId", "==", "2026-11"))));
+    await assertSucceeds(
+      getDocs(query(collection(as("bob"), "meetingPosts"), where("themeId", "==", "2026-11"), where("hidden", "==", false))),
+    );
+    await assertSucceeds(getDocs(query(collection(as("alice"), "meetingPosts"), where("authorUid", "==", "alice"))));
+  });
+  test("運営は語り・本を削除できる", async () => {
+    await assertSucceeds(deleteDoc(doc(admin(), "meetingPosts", "p1")));
+    await assertSucceeds(deleteDoc(doc(admin(), "books", "b1")));
+  });
+  test("住民票の非表示：本人は外せず、ほかの住民には見えない", async () => {
+    await assertFails(setDoc(doc(as("carol"), "users", "carol"), { ...profile("かえで"), hidden: true }));
+    await assertSucceeds(updateDoc(doc(admin(), "users", "alice"), { hidden: true }));
+    await assertFails(updateDoc(doc(as("alice"), "users", "alice"), { hidden: false, updatedAt: serverTimestamp() }));
+    await assertSucceeds(updateDoc(doc(as("alice"), "users", "alice"), { region: "東京都", updatedAt: serverTimestamp() }));
+    await assertFails(getDoc(doc(as("bob"), "users", "alice")));
+    await assertSucceeds(getDoc(doc(as("alice"), "users", "alice")));
+    await assertSucceeds(getDocs(query(collection(as("bob"), "users"), where("hidden", "==", false))));
+  });
 });

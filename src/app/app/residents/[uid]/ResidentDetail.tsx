@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Header } from "@/components/Header";
 import { ReactionButton } from "@/components/ReactionButton";
+import { ReportButton } from "@/components/ReportButton";
 import { LoadError, Loading } from "@/components/Status";
 import s from "@/components/ui.module.css";
 import { Who } from "@/components/Who";
@@ -43,7 +44,8 @@ export function ResidentDetail() {
     let alive = true;
     getResident(uid).then(
       (r) => alive && setState({ uid, resident: r }),
-      () => alive && setState({ uid, error: true }),
+      // 運営が非表示にした住民票は、本人と運営以外には読めない（ルールで拒否される）
+      (e) => alive && setState(e?.code === "permission-denied" ? { uid, resident: null } : { uid, error: true }),
     );
     myReactions("history", [uid], me).then(
       (set) => alive && setReaction({ uid, reacted: set.has(uid) }),
@@ -59,12 +61,17 @@ export function ResidentDetail() {
 
   let body;
   if (current && "error" in current) body = <LoadError what="住民票" />;
-  else if (!r) body = isMe || !current ? <Loading /> : <p className={s.muted}>この住民票は見つかりませんでした。</p>;
+  else if (!r) body = isMe || !current ? <Loading /> : <p className={s.muted}>この住民票は見つからないか、表示できない状態になっています。</p>;
   else {
     const tags = splitTags(r.hardScenes);
     const rows = ROWS.filter(([k]) => r[k]);
     body = (
       <>
+        {r.hidden && (
+          <p className={s.hiddenNote}>
+            {isMe ? "あなたの住民票は、運営が非表示にしています。ほかの住民には見えません。" : "運営が非表示にしています。ほかの住民には見えません。"}
+          </p>
+        )}
         <Who uid={r.uid} nickname={r.nickname} ageGroup={r.ageGroup} note={r.createdAt ? `${formatMonth(r.createdAt)}に入村` : undefined} isMe={isMe} link={false} />
         {r.intro && <p className={s.lead}>{r.intro}</p>}
         {tags.length > 0 && (
@@ -114,6 +121,7 @@ export function ResidentDetail() {
             </p>
           )}
         </section>
+        <ReportButton type="profile" id={r.uid} mine={isMe} />
       </>
     );
   }

@@ -46,7 +46,7 @@ service cloud.firestore {
       return ['nickname', 'ageGroup', 'intro', 'region', 'job', 'features', 'onset',
               'hardSounds', 'hardWords', 'hardScenes', 'struggles', 'tips',
               'hobbies', 'challenges', 'history',
-              'historyReactionCount', 'createdAt', 'updatedAt'];
+              'historyReactionCount', 'hidden', 'createdAt', 'updatedAt'];
     }
 
     // 住民票の本文として正しいか（作成・更新で共通）
@@ -64,11 +64,15 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read: if isResident();
+      // 運営が非表示にした住民票は、本人と運営だけが読める。
+      // 一覧の取得では where('hidden', '==', false) を付けないと拒否される
+      allow read: if isResident()
+        && (resource.data.hidden == false || isSelf(uid) || isAdmin());
 
       // 新規登録。共感の件数は0から始まる。メール確認前でも作れる
       allow create: if isSelf(uid)
         && validProfile(request.resource.data)
+        && request.resource.data.hidden == false
         && request.resource.data.historyReactionCount == 0
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
@@ -77,6 +81,7 @@ service cloud.firestore {
       allow update: if isSelf(uid) && isResident()
         && validProfile(request.resource.data)
         && request.resource.data.historyReactionCount == resource.data.historyReactionCount
+        && request.resource.data.hidden == resource.data.hidden
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time;
 
@@ -84,7 +89,62 @@ service cloud.firestore {
       allow update: if isResident() && !isSelf(uid)
         && reactionCountChange('history', uid, 'historyReactionCount');
 
+      // 運営：通報を受けて非表示にする・戻す
+      allow update: if isAdmin() && moderationChange();
+
       // 退会は今回作らない
+      allow delete: if false;
+    }
+
+    // ---- 運営（通報への対応） ----
+
+    // 運営が変えられるのは hidden（非表示かどうか）だけ
+    function moderationChange() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hidden'])
+        && request.resource.data.hidden is bool;
+    }
+
+    // 投稿を読めるのは、表示中のもの、自分のもの、運営
+    function canReadAuthored() {
+      return isResident()
+        && (resource.data.hidden == false || resource.data.authorUid == request.auth.uid || isAdmin());
+    }
+
+    // ---- 通報 reports/{targetType_targetId_reporterUid} ----
+    // 住民は通報を送れるが、読めない。読む・対応済みにするのは運営だけ。
+    // ID を「対象_送った人」にして、同じ人が同じものを何度も通報できないようにする
+
+    function reportReasons() {
+      return ['attack', 'privacy', 'impersonation', 'danger', 'spam', 'other'];
+    }
+
+    function reportTargetDoc(type, targetId) {
+      return type == 'post' ? docPath('meetingPosts/' + targetId)
+        : type == 'book' ? docPath('books/' + targetId)
+        : docPath('users/' + targetId);
+    }
+
+    match /reports/{reportId} {
+      allow read: if isAdmin();
+
+      allow create: if isResident()
+        && request.resource.data.keys().hasOnly(['reporterUid', 'targetType', 'targetId', 'reason', 'details', 'status', 'createdAt'])
+        && request.resource.data.reporterUid == request.auth.uid
+        && request.resource.data.targetType in ['post', 'book', 'profile']
+        && request.resource.data.targetId is string
+        && reportId == request.resource.data.targetType + '_' + request.resource.data.targetId + '_' + request.auth.uid
+        && request.resource.data.reason in reportReasons()
+        && str(request.resource.data.details, 1000)
+        && request.resource.data.status == 'open'
+        && request.resource.data.createdAt == request.time
+        && exists(reportTargetDoc(request.resource.data.targetType, request.resource.data.targetId));
+
+      // 運営：対応済みにする（resolvedAt に時刻）、未対応に戻す（resolvedAt を null）
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'resolvedAt'])
+        && ((request.resource.data.status == 'resolved' && request.resource.data.resolvedAt == request.time)
+          || (request.resource.data.status == 'open' && request.resource.data.resolvedAt == null));
+
       allow delete: if false;
     }
 
@@ -196,7 +256,7 @@ service cloud.firestore {
     }
 
     function postKeys() {
-      return ['themeId', 'authorUid', 'authorNickname', 'authorAgeGroup', 'text', 'reactionCount', 'createdAt', 'updatedAt'];
+      return ['themeId', 'authorUid', 'authorNickname', 'authorAgeGroup', 'text', 'reactionCount', 'hidden', 'createdAt', 'updatedAt'];
     }
 
     // 投稿に複製している書き手のニックネーム・年代が、住民票と一致しているか。
@@ -207,7 +267,8 @@ service cloud.firestore {
     }
 
     match /meetingPosts/{postId} {
-      allow read: if isResident();
+      // 非表示の語りは本人と運営だけ。一覧では where('hidden', '==', false) が必要
+      allow read: if canReadAuthored();
 
       // 投稿できるのは今月のテーマだけ。本文は5,000字まで
       allow create: if isResident()
@@ -218,6 +279,7 @@ service cloud.firestore {
         && request.resource.data.text.size() >= 1
         && request.resource.data.text.size() <= 5000
         && request.resource.data.reactionCount == 0
+        && request.resource.data.hidden == false
         && request.resource.data.createdAt == request.time
         && authorMatches(request.resource.data);
 
@@ -241,18 +303,22 @@ service cloud.firestore {
         && resource.data.authorUid != request.auth.uid
         && reactionCountChange('post', postId, 'reactionCount');
 
-      allow delete: if isResident() && resource.data.authorUid == request.auth.uid;
+      // 運営：通報を受けて非表示にする・戻す
+      allow update: if isAdmin() && moderationChange();
+
+      // 書き手本人と運営が削除できる
+      allow delete: if isResident() && (resource.data.authorUid == request.auth.uid || isAdmin());
     }
 
     // ---- 図書館 books/{bookId}（苦労・夢 × 本 × 変化の物語） ----
 
     function bookKeys() {
       return ['authorUid', 'authorNickname', 'authorAgeGroup', 'heading', 'title', 'bookAuthor',
-              'struggle', 'words', 'change', 'reactionCount', 'createdAt'];
+              'struggle', 'words', 'change', 'reactionCount', 'hidden', 'createdAt'];
     }
 
     match /books/{bookId} {
-      allow read: if isResident();
+      allow read: if canReadAuthored();
 
       // 見出しと書名は必須。問いはどれも任意で、各2,000字まで
       allow create: if isResident()
@@ -269,6 +335,7 @@ service cloud.firestore {
         && str(request.resource.data.words, 2000)
         && str(request.resource.data.change, 2000)
         && request.resource.data.reactionCount == 0
+        && request.resource.data.hidden == false
         && request.resource.data.createdAt == request.time
         && authorMatches(request.resource.data);
 
@@ -283,7 +350,9 @@ service cloud.firestore {
         && resource.data.authorUid != request.auth.uid
         && reactionCountChange('book', bookId, 'reactionCount');
 
-      allow delete: if isResident() && resource.data.authorUid == request.auth.uid;
+      allow update: if isAdmin() && moderationChange();
+
+      allow delete: if isResident() && (resource.data.authorUid == request.auth.uid || isAdmin());
     }
 
     // ここに書かれていないものは、すべて読み書きできない

@@ -29,6 +29,7 @@ export function toProfile(snap: DocumentSnapshot<DocumentData>): UserProfile | n
   return {
     ...EMPTY_PROFILE_FIELDS,
     historyReactionCount: 0,
+    hidden: false,
     createdAt: null,
     updatedAt: null,
     ...d,
@@ -43,6 +44,7 @@ export function createProfile(uid: string, nickname: string, ageGroup: AgeGroup)
     ageGroup,
     ...EMPTY_PROFILE_FIELDS,
     historyReactionCount: 0,
+    hidden: false,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -57,7 +59,7 @@ export async function getResident(uid: string) {
 }
 
 export async function countResidents() {
-  const snap = await getCountFromServer(collection(firestore(), "users"));
+  const snap = await getCountFromServer(query(collection(firestore(), "users"), where("hidden", "==", false)));
   return snap.data().count;
 }
 
@@ -67,9 +69,9 @@ export type ResidentPage = {
   cursor: QueryDocumentSnapshot<DocumentData> | null;
 };
 
-/** 新しく村に来た順に住民票を読む */
+/** 新しく村に来た順に住民票を読む。運営が非表示にした住民票は除く */
 export async function listResidents(pageSize: number, after?: QueryDocumentSnapshot<DocumentData> | null): Promise<ResidentPage> {
-  const base = query(collection(firestore(), "users"), orderBy("createdAt", "desc"));
+  const base = query(collection(firestore(), "users"), where("hidden", "==", false), orderBy("createdAt", "desc"));
   const q = after ? query(base, startAfter(after), limit(pageSize)) : query(base, limit(pageSize));
   const snap = await getDocs(q);
   return {

@@ -24,6 +24,14 @@ export default function Top() {
       <main className={s.main}>
         <Hero preload />
         <div className={s.stack}>
+          <p className={s.lead} style={{ fontFamily: "var(--f-display)", fontWeight: 700 }}>
+            吃音者の、吃音者による、吃音者のための小さな村。
+          </p>
+          <p className={s.lead}>
+            吃音を抱えながら生きてきた人たちが集まり、互いの存在を感じ、苦労を語り、支え合う場所です。
+          </p>
+        </div>
+        <div className={s.stack}>
           <h1 className={s.h1}>吃音を抱えているのは、あなた一人ではない。</h1>
           <p className={s.lead}>声を出さなくても、言葉を交わせる。互いの人生に触れ、支え合える場所。</p>
         </div>

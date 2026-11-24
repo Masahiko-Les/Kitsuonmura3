@@ -21,12 +21,14 @@ export type UserProfile = {
   challenges: string;
   history: string;
   historyReactionCount: number;
+  /** 運営が非表示にしたか。本人と運営にしか読めなくなる */
+  hidden: boolean;
   createdAt: Timestamp | null;
   updatedAt: Timestamp | null;
 };
 
 /** 住民票の編集で書き換えられる項目 */
-export type EditableProfile = Omit<UserProfile, "uid" | "historyReactionCount" | "createdAt" | "updatedAt">;
+export type EditableProfile = Omit<UserProfile, "uid" | "historyReactionCount" | "hidden" | "createdAt" | "updatedAt">;
 
 export const EMPTY_PROFILE_FIELDS = {
   intro: "",
@@ -65,6 +67,8 @@ export type MeetingPost = AuthorFields & {
   themeId: string;
   text: string;
   reactionCount: number;
+  /** 運営が非表示にしたか */
+  hidden: boolean;
   createdAt: Timestamp | null;
 };
 
@@ -87,6 +91,8 @@ export type Book = AuthorFields & {
   /** 自分の考えや変化 */
   change: string;
   reactionCount: number;
+  /** 運営が非表示にしたか */
+  hidden: boolean;
   createdAt: Timestamp | null;
 };
 
@@ -98,3 +104,19 @@ export const BOOK_QUESTIONS: { key: "struggle" | "words" | "change"; heading: st
   { key: "words", heading: "支えられた考え方", hint: "本文の長い引用は避け、あなたの言葉で書いてください。" },
   { key: "change", heading: "自分の考えや変化", hint: "変わらなかった経験も、大切な物語です。" },
 ];
+
+/** 通報できるもの。profile＝住民票（吃音史を含む）、id は住民の uid */
+export type ReportTargetType = "post" | "book" | "profile";
+
+/** reports/{targetType_targetId_reporterUid}。運営（管理者）だけが読める */
+export type Report = {
+  id: string;
+  reporterUid: string;
+  targetType: ReportTargetType;
+  targetId: string;
+  reason: string;
+  details: string;
+  status: "open" | "resolved";
+  createdAt: Timestamp | null;
+  resolvedAt: Timestamp | null;
+};

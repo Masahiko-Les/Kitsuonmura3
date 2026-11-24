@@ -28,7 +28,7 @@ function toTheme(id: string, d: DocumentData): Theme {
 }
 
 function toPost(d: QueryDocumentSnapshot<DocumentData>): MeetingPost {
-  return { reactionCount: 0, createdAt: null, ...d.data(), id: d.id } as MeetingPost;
+  return { reactionCount: 0, hidden: false, createdAt: null, ...d.data(), id: d.id } as MeetingPost;
 }
 
 /** 今月のテーマの ID。まだテーマがなければ null */
@@ -49,13 +49,18 @@ export async function getTheme(id: string): Promise<Theme | null> {
 }
 
 export async function countThemePosts(themeId: string) {
-  const s = await getCountFromServer(query(collection(firestore(), "meetingPosts"), where("themeId", "==", themeId)));
+  const s = await getCountFromServer(query(collection(firestore(), "meetingPosts"), where("themeId", "==", themeId), where("hidden", "==", false)));
   return s.data().count;
 }
 
-/** テーマの語りを新しい順に */
+/** テーマの語りを新しい順に。運営が非表示にしたものは除く（除かないとルールで拒否される） */
 export async function listThemePosts(themeId: string, pageSize: number, after?: Cursor) {
-  const base = query(collection(firestore(), "meetingPosts"), where("themeId", "==", themeId), orderBy("createdAt", "desc"));
+  const base = query(
+    collection(firestore(), "meetingPosts"),
+    where("themeId", "==", themeId),
+    where("hidden", "==", false),
+    orderBy("createdAt", "desc"),
+  );
   const s = await getDocs(after ? query(base, startAfter(after), limit(pageSize)) : query(base, limit(pageSize)));
   return {
     posts: s.docs.map(toPost),
@@ -72,6 +77,7 @@ export function createMeetingPost(themeId: string, text: string, me: UserProfile
     authorAgeGroup: me.ageGroup,
     text,
     reactionCount: 0,
+    hidden: false,
     createdAt: serverTimestamp(),
   });
 }
@@ -91,7 +97,7 @@ export function updateMeetingPost(id: string, text: string) {
 
 export async function getMeetingPost(id: string) {
   const s = await getDoc(doc(firestore(), "meetingPosts", id));
-  return s.exists() ? ({ reactionCount: 0, createdAt: null, ...s.data(), id: s.id } as MeetingPost) : null;
+  return s.exists() ? ({ reactionCount: 0, hidden: false, createdAt: null, ...s.data(), id: s.id } as MeetingPost) : null;
 }
 
 export function deleteMeetingPost(id: string) {

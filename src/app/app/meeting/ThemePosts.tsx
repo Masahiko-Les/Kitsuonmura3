@@ -3,6 +3,7 @@
 // あるテーマの語りの一覧。返信はなく、共感ボタンだけ（件数は出さない）。新しい順に30件ずつ
 import { useEffect, useState } from "react";
 import { ReactionButton } from "@/components/ReactionButton";
+import { ReportButton } from "@/components/ReportButton";
 import { LoadError, Loading } from "@/components/Status";
 import s from "@/components/ui.module.css";
 import { Who } from "@/components/Who";
@@ -62,7 +63,10 @@ export function ThemePosts({ themeId }: { themeId: string }) {
         <article key={p.id} className={s.card}>
           <Who uid={p.authorUid} nickname={p.authorNickname} ageGroup={p.authorAgeGroup} note={formatDate(p.createdAt)} isMe={p.authorUid === uid} />
           <p className={s.prose}>{p.text}</p>
-          <ReactionButton target={{ type: "post", id: p.id }} mine={p.authorUid === uid} reacted={state.reacted ? state.reacted.has(p.id) : undefined} />
+          <div className={s.row}>
+            <ReactionButton target={{ type: "post", id: p.id }} mine={p.authorUid === uid} reacted={state.reacted ? state.reacted.has(p.id) : undefined} />
+            <ReportButton type="post" id={p.id} mine={p.authorUid === uid} />
+          </div>
         </article>
       ))}
       {state.cursor && (

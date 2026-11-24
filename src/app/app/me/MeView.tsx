@@ -12,6 +12,7 @@ import { Who } from "@/components/Who";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { deleteBook, listMyBooks } from "@/lib/firebase/books";
 import { deleteMeetingPost, listMyPosts, listThemes } from "@/lib/firebase/meeting";
+import { countOpenReports } from "@/lib/firebase/moderation";
 import { formatDate, formatMonth } from "@/lib/format";
 import type { Book, MeetingPost } from "@/lib/types";
 
@@ -27,6 +28,7 @@ export function MeView() {
   const [target, setTarget] = useState<Target | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [admin, setAdmin] = useState(false);
+  const [openReports, setOpenReports] = useState<number | null>(null);
 
   useEffect(() => {
     if (!uid) return;
@@ -37,7 +39,15 @@ export function MeView() {
       () => alive && setError(true),
     );
     user?.getIdTokenResult().then(
-      (r) => alive && setAdmin(r.claims.admin === true),
+      (r) => {
+        if (!alive || r.claims.admin !== true) return;
+        setAdmin(true);
+        // 運営には、まだ対応していない通報の件数を出す
+        countOpenReports().then(
+          (n) => alive && setOpenReports(n),
+          () => {},
+        );
+      },
       () => {},
     );
     return () => {
@@ -75,6 +85,7 @@ export function MeView() {
               ageGroup={profile.ageGroup}
               note={profile.createdAt ? `${formatMonth(profile.createdAt)}に入村` : undefined}
             />
+            {profile.hidden && <p className={s.hiddenNote}>あなたの住民票は、運営が非表示にしています。ほかの住民には見えません。</p>}
             {!profile.intro && !profile.history && (
               <p className={`${s.small} ${s.muted}`}>住民票はまだ書かれていません。書かずに過ごすこともできます。</p>
             )}
@@ -96,6 +107,7 @@ export function MeView() {
             <div className={s.stack}>
               {w.posts.map((p) => (
                 <div key={p.id} className={s.card}>
+                  {p.hidden && <p className={s.hiddenNote}>運営が非表示にしています。ほかの住民には見えません。</p>}
                   <span className={s.cardLabel}>集会　{w.themeTitles[p.themeId] ?? p.themeId}</span>
                   <p className={`${s.small}`} style={{ whiteSpace: "pre-wrap" }}>
                     {p.text.length > 120 ? `${p.text.slice(0, 120)}…` : p.text}
@@ -115,6 +127,7 @@ export function MeView() {
               ))}
               {w.books.map((b) => (
                 <div key={b.id} className={s.card}>
+                  {b.hidden && <p className={s.hiddenNote}>運営が非表示にしています。ほかの住民には見えません。</p>}
                   <span className={s.cardLabel}>図書館　『{b.title}』</span>
                   <Link href={`/app/library/${b.id}`} className={s.cardTitle}>
                     {b.heading}
@@ -140,6 +153,11 @@ export function MeView() {
             <Link href="/guide">吃音情報ガイド・相談先</Link>
             <Link href="/about">吃音村について</Link>
             <Link href="/welcome">はじめの案内をもう一度見る</Link>
+            {admin && (
+              <Link href="/app/admin/reports">
+                通報の確認{openReports ? `（未対応 ${openReports}件）` : ""}
+              </Link>
+            )}
             {admin && <Link href="/app/admin/themes">集会テーマの管理</Link>}
             <button type="button" onClick={() => void logout()}>
               ログアウト

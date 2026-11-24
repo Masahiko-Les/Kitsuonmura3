@@ -237,7 +237,7 @@ async function seed() {
   const batch = db.batch();
 
   for (const { id, joined, ...u } of USERS) {
-    batch.set(db.doc(`users/${id}`), { ...u, createdAt: at(joined), updatedAt: at(joined) });
+    batch.set(db.doc(`users/${id}`), { ...u, hidden: false, createdAt: at(joined), updatedAt: at(joined) });
   }
   for (const t of THEMES) {
     batch.set(db.doc(`themes/${t.id}`), {
@@ -254,11 +254,12 @@ async function seed() {
       ...author(p.author),
       text: p.text,
       reactionCount: p.reactionCount,
+      hidden: false,
       createdAt: at(p.date),
     });
   }
   for (const { id, author: a, date, ...b } of BOOKS) {
-    batch.set(db.doc(`books/${id}`), { ...author(a), ...b, createdAt: at(date) });
+    batch.set(db.doc(`books/${id}`), { ...author(a), ...b, hidden: false, createdAt: at(date) });
   }
 
   await batch.commit();

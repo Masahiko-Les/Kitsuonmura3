@@ -20,7 +20,23 @@ export const LIMITS = {
   bookAnswer: 2000,
   themeTitle: 100,
   themeDescription: 500,
+  /** 通報の補足 */
+  reportDetails: 1000,
 } as const;
+
+/**
+ * 通報の理由（SECURITY_AND_DATA.md「投稿と安全運営」）。
+ * キーは firestore.rules の reportReasons() と揃えること。
+ */
+export const REPORT_REASONS = [
+  { key: "attack", label: "誹謗中傷・攻撃的な内容" },
+  { key: "privacy", label: "個人を特定できる情報が書かれている" },
+  { key: "impersonation", label: "なりすまし" },
+  { key: "danger", label: "危険な助言・根拠のない治療の宣伝" },
+  { key: "spam", label: "宣伝・勧誘・スパム" },
+  { key: "other", label: "その他" },
+] as const;
+export type ReportReason = (typeof REPORT_REASONS)[number]["key"];
 
 /** メール確認を必須にするか（開発中は false） */
 export const REQUIRE_EMAIL_VERIFICATION = process.env.NEXT_PUBLIC_REQUIRE_EMAIL_VERIFICATION === "true";
