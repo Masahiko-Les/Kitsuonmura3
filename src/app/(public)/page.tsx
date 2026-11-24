@@ -44,7 +44,7 @@ export default function Top() {
           </Link>
         </div>
         <section className={s.section}>
-          <h2 className={s.h2}>村でできること</h2>
+          <h2 className={s.h2}>吃音村でできること</h2>
           {FEATURES.map((f) => (
             <div key={f.title} className={s.card}>
               <span className={s.cardTitle}>{f.title}</span>
