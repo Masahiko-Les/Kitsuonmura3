@@ -7,7 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const pages: { path: string; priority: number }[] = [
     { path: "/", priority: 1 },
     { path: "/guide", priority: 0.9 },
-    // 吃音情報ガイドの各ページ。書籍は準備中なので載せない
+    // 吃音情報まとめページの各ページ。書籍は準備中なので載せない
     ...GUIDE_PAGES.filter((p) => p.slug !== "books").map((p) => ({ path: `/guide/${p.slug}`, priority: 0.8 })),
     { path: "/about", priority: 0.7 },
     { path: "/terms", priority: 0.3 },

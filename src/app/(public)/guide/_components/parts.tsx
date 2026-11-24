@@ -1,4 +1,4 @@
-// 吃音情報ガイドの共通部品（サーバーで描画する）
+// 吃音情報まとめページの共通部品（サーバーで描画する）
 import Link from "next/link";
 import { SOURCE_TYPE_LABEL, type GuideResource } from "@content/guide";
 import s from "@/components/ui.module.css";
@@ -65,8 +65,8 @@ export function ResourceCard({ r, headingLevel = 3 }: { r: GuideResource; headin
 /** ガイドの各ページの下に出す注意書き */
 export function GuideNote() {
   return (
-    <aside className={s.note} aria-label="このガイドについて">
-      このガイドは、医療行為や診断ではありません。確認日は、出典のページが存在し、その主旨を確かめた日です。
+    <aside className={s.note} aria-label="このまとめページについて">
+      このまとめページは、医療行為や診断ではありません。確認日は、出典のページが存在し、その主旨を確かめた日です。
       団体がいま活動していることや、相談窓口が受け付けていること、リンク先がいまも開けることを保証するものではありません。
       すべての情報を網羅しているわけでもありません。急な体調の変化や命の危険があるときは、ためらわずに119番・110番へ連絡してください。
     </aside>

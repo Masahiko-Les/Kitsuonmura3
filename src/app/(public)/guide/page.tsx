@@ -1,4 +1,4 @@
-// 公開の吃音情報ガイドの入口。登録しなくても読める（kitsuon_info_guide/CONTENT_GUIDE.md）
+// 公開の吃音情報まとめページの入口。登録しなくても読める（kitsuon_info_guide/CONTENT_GUIDE.md）
 import Link from "next/link";
 import { GUIDE_GROUPS, GUIDE_PAGES, GUIDE_RESOURCES, GUIDE_REVIEW_DATE } from "@content/guide";
 import { Header } from "@/components/Header";
@@ -10,7 +10,7 @@ import { GuideSearch } from "./_components/GuideSearch";
 import { Breadcrumbs, GuideNote } from "./_components/parts";
 
 export const metadata = publicMetadata({
-  title: "吃音情報ガイド",
+  title: "吃音情報まとめページ",
   description:
     "吃音について知りたいとき、仲間を探したいときに。吃音の解説、自助グループ、医療・相談、学校・仕事、研究資料への入口です。登録しなくても使えます。",
   path: "/guide",
@@ -19,13 +19,13 @@ export const metadata = publicMetadata({
 export default function Guide() {
   return (
     <>
-      <Header kind="back" href="/" title="吃音情報ガイド" />
+      <Header kind="back" href="/" title="吃音情報まとめページ" />
       <main className={s.main}>
         <div className={s.stack}>
-          <Breadcrumbs items={[{ href: "/", label: "吃音村" }, { label: "吃音情報ガイド" }]} />
+          <Breadcrumbs items={[{ href: "/", label: "吃音村" }, { label: "吃音情報まとめページ" }]} />
           <h1 className={s.h1}>吃音について知りたいとき、仲間を探したいとき。</h1>
           <p className={s.lead}>
-            吃音村の情報ガイドは、吃音に関する信頼できる情報や、地域の自助グループへの入口です。登録しなくても使えます。あなたのペースで、必要な情報を探してください。
+            吃音村の吃音情報まとめページは、吃音に関する信頼できる情報や、地域の自助グループへの入口です。登録しなくても使えます。あなたのペースで、必要な情報を探してください。
           </p>
         </div>
 

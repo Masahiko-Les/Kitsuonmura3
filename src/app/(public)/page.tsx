@@ -51,7 +51,7 @@ export default function Top() {
           ))}
         </section>
         <section className={s.section}>
-          <h2 className={s.h2}>吃音情報ガイド</h2>
+          <h2 className={s.h2}>吃音情報まとめページ</h2>
           <Link href="/guide" className={s.cardMuted}>
             <span className={s.cardTitle}>自助グループや相談先を探す</span>
             <span className={`${s.small} ${s.muted}`}>登録しなくても読めます</span>

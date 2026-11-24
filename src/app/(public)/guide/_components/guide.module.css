@@ -1,4 +1,4 @@
-/* 吃音情報ガイドだけで使う部品。基本の部品は src/components/ui.module.css */
+/* 吃音情報まとめページだけで使う部品。基本の部品は src/components/ui.module.css */
 
 .crumbs ol {
   list-style: none;

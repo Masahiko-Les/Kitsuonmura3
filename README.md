@@ -46,7 +46,7 @@ Vercel の「Settings → Environment Variables」に `.env.example` と同じ�
 いちばん新しい月のテーマが「今月の集会」になり、住民はそのテーマにだけ語りを置けます。
 過去のテーマはアーカイブとして残り、削除できません。
 
-## 吃音情報ガイド（/guide）
+## 吃音情報まとめページ（/guide）
 
 登録しなくても読める公開ページです。データは `content/guide/` の JSON から描画しています。
 元の資料は `kitsuon_info_guide/`（CONTENT_GUIDE.md・IMPLEMENT_FOR_CLAUDE.md。リポジトリには入れていません）。
@@ -98,7 +98,7 @@ src/components/ui.module.css  画面の部品のスタイル（DESIGN_SYSTEM.md 
 src/app/globals.css   色・書体と、入力欄などの土台
 src/lib/firebase/     Firestore の読み書き
 src/lib/auth/         ログイン状態（AuthProvider）
-content/guide/        吃音情報ガイドのデータ（resources.json・groups.json と各ページの文章）
+content/guide/        吃音情報まとめページのデータ（resources.json・groups.json と各ページの文章）
 scripts/              seed.ts（サンプルデータ。本番には入れない）、set-admin.ts（管理者の付与）
 tests/                セキュリティルールのテスト
 ```

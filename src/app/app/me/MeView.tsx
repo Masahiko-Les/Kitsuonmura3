@@ -150,7 +150,7 @@ export function MeView() {
           <h2 className={s.h2}>設定と案内</h2>
           <nav className={s.menu}>
             <Link href="/reset-password">パスワードを変更する（メールで再設定）</Link>
-            <Link href="/guide">吃音情報ガイド・相談先</Link>
+            <Link href="/guide">吃音情報まとめページ・相談先</Link>
             <Link href="/about">吃音村について</Link>
             <Link href="/terms">利用規約</Link>
             <Link href="/privacy">プライバシーポリシー</Link>

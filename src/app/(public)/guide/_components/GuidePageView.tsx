@@ -9,7 +9,7 @@ import { Breadcrumbs, GuideNote, ResourceCard } from "./parts";
 
 export function guideMetadata(slug: GuidePageSlug) {
   const p = getGuidePage(slug);
-  const meta = publicMetadata({ title: `${p.title}｜吃音情報ガイド`, description: p.description, path: `/guide/${slug}` });
+  const meta = publicMetadata({ title: `${p.title}｜吃音情報まとめページ`, description: p.description, path: `/guide/${slug}` });
   // 中身のない準備中のページは検索結果に出さない（sitemap にも載せていない）
   return p.categories.length === 0 && slug === "books" ? { ...meta, robots: { index: false, follow: true } } : meta;
 }
@@ -19,10 +19,10 @@ export function GuidePageView({ slug, children }: { slug: GuidePageSlug; childre
   const resources = resourcesFor(page);
   return (
     <>
-      <Header kind="back" href="/guide" title="吃音情報ガイド" />
+      <Header kind="back" href="/guide" title="吃音情報まとめページ" />
       <main className={s.main}>
         <div className={s.stack}>
-          <Breadcrumbs items={[{ href: "/", label: "吃音村" }, { href: "/guide", label: "吃音情報ガイド" }, { label: page.title }]} />
+          <Breadcrumbs items={[{ href: "/", label: "吃音村" }, { href: "/guide", label: "吃音情報まとめページ" }, { label: page.title }]} />
           <h1 className={s.h1}>{page.title}</h1>
           {page.body.map((p) => (
             <p key={p} className={s.lead}>

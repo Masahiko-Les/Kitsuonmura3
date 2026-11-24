@@ -102,7 +102,7 @@ export function GuideSearch({ pages, resources, groups }: Props) {
       )}
 
       {result && result.pages.length > 0 && (
-        <section className={s.section} aria-label="ガイドのページ">
+        <section className={s.section} aria-label="カテゴリのページ">
           {result.pages.map((p) => (
             <Link key={p.slug} href={`/guide/${p.slug}`} className={s.cardMuted}>
               <span className={s.cardTitle}>{p.title}</span>
