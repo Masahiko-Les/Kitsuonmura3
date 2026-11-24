@@ -92,8 +92,8 @@ service cloud.firestore {
       // 運営：通報を受けて非表示にする・戻す
       allow update: if isAdmin() && moderationChange();
 
-      // 退会は今回作らない
-      allow delete: if false;
+      // 退会：本人だけが消せる（語り・本・共感は、先に本人が消す。src/lib/firebase/account.ts）
+      allow delete: if isSelf(uid);
     }
 
     // ---- 運営（通報への対応） ----

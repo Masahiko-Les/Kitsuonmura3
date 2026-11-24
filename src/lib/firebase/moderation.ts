@@ -74,7 +74,7 @@ export function setHidden(type: ReportTargetType, id: string, hidden: boolean) {
   return updateDoc(doc(firestore(), COLLECTION[type], id), { hidden });
 }
 
-/** 語り・本の物語を運営が削除する。住民票は退会の仕組みができるまで削除しない */
+/** 語り・本の物語を運営が削除する。住民票は運営からは消さない（非表示にする。消すのは本人の退会） */
 export function deleteReported(type: "post" | "book", id: string) {
   return deleteDoc(doc(firestore(), COLLECTION[type], id));
 }

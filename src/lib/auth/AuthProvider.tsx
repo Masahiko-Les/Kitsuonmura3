@@ -17,8 +17,13 @@ export type AuthState = {
   /** 自分の住民票。読み込み中・未作成は null */
   profile: UserProfile | null;
   profileLoading: boolean;
-  /** 自分でログアウトした直後か（住民限定エリアから /login ではなく公開トップへ戻すため） */
-  loggedOut: boolean;
+  /**
+   * 自分でログアウト・退会した直後の行き先（住民限定エリアから /login ではなくここへ移す）。
+   * それ以外は null
+   */
+  exitTo: string | null;
+  /** 退会の直前に呼び、アカウントが消えたあとの行き先を決めておく */
+  setExitTo: (path: string | null) => void;
   /** メール確認後などに、最新の状態を取り直す */
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
@@ -41,12 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   // emailVerified は User を作り直さないと変化が伝わらないため、別に持つ
   const [isResident, setIsResident] = useState(false);
-  const [loggedOut, setLoggedOut] = useState(false);
+  const [exitTo, setExitTo] = useState<string | null>(null);
 
   useEffect(() => {
     return onAuthStateChanged(firebaseAuth(), (u) => {
       setUser(u);
-      if (u) setLoggedOut(false);
+      if (u) setExitTo(null);
       setIsResident(residentOf(u));
       setLoading(false);
     });
@@ -77,12 +82,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    setLoggedOut(true);
+    setExitTo("/");
     await signOut(firebaseAuth());
   };
 
   return (
-    <AuthContext.Provider value={{ loading, user, isResident, profile, profileLoading, loggedOut, refresh, logout }}>
+    <AuthContext.Provider value={{ loading, user, isResident, profile, profileLoading, exitTo, setExitTo, refresh, logout }}>
       {children}
     </AuthContext.Provider>
   );

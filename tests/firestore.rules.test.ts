@@ -108,8 +108,9 @@ describe("users（住民票）", () => {
   test("自分の共感数は変えられない", async () => {
     await assertFails(updateDoc(doc(as("alice"), "users", "alice"), { historyReactionCount: 9, updatedAt: serverTimestamp() }));
   });
-  test("削除できない", async () => {
-    await assertFails(deleteDoc(doc(as("alice"), "users", "alice")));
+  test("退会：本人だけが住民票を削除できる", async () => {
+    await assertFails(deleteDoc(doc(as("bob"), "users", "alice")));
+    await assertSucceeds(deleteDoc(doc(as("alice"), "users", "alice")));
   });
 });
 

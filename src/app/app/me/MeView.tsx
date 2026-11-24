@@ -162,9 +162,12 @@ export function MeView() {
             <button type="button" onClick={() => void logout()}>
               ログアウト
             </button>
+            <Link href="/app/me/leave" style={{ color: "var(--danger)" }}>
+              退会する
+            </Link>
           </nav>
           <p className={`${s.small} ${s.muted}`}>
-            村は医療や危機対応の場ではありません。つらいときは、専門の相談先を頼ってください。退会の手続きは、これから用意します。
+            村は医療や危機対応の場ではありません。つらいときは、専門の相談先を頼ってください。
           </p>
         </section>
 
