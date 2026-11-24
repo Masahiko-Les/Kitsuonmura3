@@ -37,10 +37,7 @@ export default function Top() {
           <Link href="/welcome" className={s.btn}>
             吃音村の住民になる
           </Link>
-          <Link href="/login" className={s.btnGhost}>
-            すでに住民の方はこちら
-          </Link>
-          <Link href="/guide" className={s.textLink}>
+          <Link href="/guide" className={s.btnGhost}>
             吃音情報をまとめたページはこちら
           </Link>
         </div>
