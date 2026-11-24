@@ -23,21 +23,18 @@ export default function Top() {
       <Header right={{ href: "/login", label: "ログイン" }} />
       <main className={s.main}>
         <Hero preload />
-        <div className={s.stack}>
-          <p className={s.lead} style={{ fontFamily: "var(--f-display)", fontWeight: 700 }}>
-            吃音者の、吃音者による、吃音者のための小さな村。
-          </p>
+        <div className={s.stack} style={{ textAlign: "center" }}>
+          <h1 className={s.h1} style={{ fontFamily: "var(--f-display)" }}>
+            ようこそ、吃音村へ
+          </h1>
+          <p className={s.lead}>ここは、吃音者の、吃音者による、吃音者のための小さな村です。</p>
           <p className={s.lead}>
-            吃音を抱えながら生きてきた人たちが集まり、互いの存在を感じ、苦労を語り、支え合う場所です。
+            吃音を抱えながら生きてきた人たちが集まり、完全にテキストベースで、互いの存在を感じ、支え合う場所です。
           </p>
-        </div>
-        <div className={s.stack}>
-          <h1 className={s.h1}>吃音を抱えているのは、あなた一人ではない。</h1>
-          <p className={s.lead}>声を出さなくても、言葉を交わせる。互いの人生に触れ、支え合える場所。</p>
         </div>
         <div className={s.stack}>
           <Link href="/welcome" className={s.btn}>
-            村の住民になる
+            吃音村の住民になる
           </Link>
           <Link href="/login" className={s.btnGhost}>
             すでに住民の方はこちら
