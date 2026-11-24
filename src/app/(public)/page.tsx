@@ -40,7 +40,7 @@ export default function Top() {
             すでに住民の方はこちら
           </Link>
           <Link href="/guide" className={s.textLink}>
-            登録せずに吃音の情報を探す
+            吃音情報をまとめたページはこちら
           </Link>
         </div>
         <section className={s.section}>
