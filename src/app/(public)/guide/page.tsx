@@ -12,7 +12,7 @@ import { Breadcrumbs, GuideNote } from "./_components/parts";
 export const metadata = publicMetadata({
   title: "吃音情報まとめページ",
   description:
-    "吃音について知りたいとき、仲間を探したいときに。吃音の解説、自助グループ、医療・相談、学校・仕事、研究資料への入口です。登録しなくても使えます。",
+    "吃音について知りたいとき、仲間を探したいときに。吃音の解説、自助グループ、医療・相談、学校・仕事、研究資料への入口です。吃音村の村人でなくても使えます。",
   path: "/guide",
 });
 
