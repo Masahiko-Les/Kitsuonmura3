@@ -18,7 +18,7 @@ const zenOldMincho = Zen_Old_Mincho({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "吃音村｜吃音者の、吃音者による、吃音者のための小さな村",
+    default: "吃音村｜吃音者の、吃音者による、吃音者のための小さなコミュニティ",
     template: "%s｜吃音村",
   },
   // 本番ドメインをつなぐまではサイト全体を検索結果に出さない（NEXT_PUBLIC_ALLOW_INDEXING）
