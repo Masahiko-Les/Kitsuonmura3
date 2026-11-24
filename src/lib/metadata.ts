@@ -40,3 +40,9 @@ export function publicMetadata({ title, description, path }: Options): Metadata 
     },
   };
 }
+
+/** 運営者（利用規約・プライバシーポリシー・問い合わせ先に出す） */
+export const OPERATOR_NAME = "ミリエル";
+export const CONTACT_EMAIL = "myriel.jp@gmail.com";
+/** 利用規約・プライバシーポリシーの制定日 */
+export const POLICY_DATE = "2026年11月24日";

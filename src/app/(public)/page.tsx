@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import s from "@/components/ui.module.css";
-import { publicMetadata } from "@/lib/metadata";
+import { OPERATOR_NAME, publicMetadata } from "@/lib/metadata";
 
 const FEATURES = [
   { title: "住民票", text: "住民一人ひとりの人生と、吃音とともに歩んできた吃音史を読めます。書くかどうかは自由です。" },
@@ -27,9 +27,9 @@ export default function Top() {
           <h1 className={s.h1} style={{ fontFamily: "var(--f-display)" }}>
             ようこそ、吃音村へ
           </h1>
-          <p className={s.lead}>ここは、吃音者の、吃音者による、吃音者のための小さな村です。</p>
+          <p className={s.lead}>ここは、吃音者の、吃音者による、吃音者のための小さな村。</p>
           <p className={s.lead}>
-            吃音を抱えながら生きてきた人たちが集まり、完全にテキストベースで、互いの存在を感じ、支え合う場所です。
+            吃音を抱えながら生きてきた人たちが集まり、文字だけで交流し、互いに支え合う場所です。
           </p>
         </div>
         <div className={s.stack}>
@@ -61,6 +61,19 @@ export default function Top() {
           <Link href="/about" className={s.textLink}>
             吃音村について
           </Link>
+        </section>
+        <section className={s.section} aria-label="規約と運営者">
+          <nav className={s.tags} style={{ justifyContent: "center", gap: 16 }}>
+            <Link href="/terms" className={`${s.small} ${s.muted}`} style={{ padding: 8 }}>
+              利用規約
+            </Link>
+            <Link href="/privacy" className={`${s.small} ${s.muted}`} style={{ padding: 8 }}>
+              プライバシーポリシー
+            </Link>
+          </nav>
+          <p className={`${s.small} ${s.muted}`} style={{ textAlign: "center" }}>
+            運営：{OPERATOR_NAME}
+          </p>
         </section>
       </main>
     </>

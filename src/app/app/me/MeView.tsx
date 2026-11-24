@@ -152,6 +152,8 @@ export function MeView() {
             <Link href="/reset-password">パスワードを変更する（メールで再設定）</Link>
             <Link href="/guide">吃音情報ガイド・相談先</Link>
             <Link href="/about">吃音村について</Link>
+            <Link href="/terms">利用規約</Link>
+            <Link href="/privacy">プライバシーポリシー</Link>
             <Link href="/welcome">はじめの案内をもう一度見る</Link>
             {admin && (
               <Link href="/app/admin/reports">

@@ -10,6 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // 吃音情報ガイドの各ページ。書籍は準備中なので載せない
     ...GUIDE_PAGES.filter((p) => p.slug !== "books").map((p) => ({ path: `/guide/${p.slug}`, priority: 0.8 })),
     { path: "/about", priority: 0.7 },
+    { path: "/terms", priority: 0.3 },
+    { path: "/privacy", priority: 0.3 },
   ];
   return pages.map(({ path, priority }) => ({
     url: new URL(path, SITE_URL).toString(),

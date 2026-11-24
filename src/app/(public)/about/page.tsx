@@ -1,7 +1,9 @@
 // 吃音村について（理念・参加は任意・村の約束）。文言は PRODUCT_SPEC.md / SECURITY_AND_DATA.md から
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { publicMetadata } from "@/lib/metadata";
 import s from "@/components/ui.module.css";
+import { OperatorBox } from "../_legal/LegalPage";
 
 export const metadata = publicMetadata({
   title: "吃音村について",
@@ -36,9 +38,18 @@ export default function About() {
             <li>吃音の治療や改善を約束する場所ではありません。医療の相談は専門の窓口へ。</li>
           </ul>
         </section>
-        <p className={s.note}>
-          この「村の約束」はまだ案の段階です。利用規約・プライバシーポリシーは本格的な公開の前に整えます。
+        <p className={s.small}>
+          くわしくは
+          <Link href="/terms" className={s.headerLink}>
+            利用規約
+          </Link>
+          と
+          <Link href="/privacy" className={s.headerLink}>
+            プライバシーポリシー
+          </Link>
+          をご覧ください。
         </p>
+        <OperatorBox />
       </main>
     </>
   );

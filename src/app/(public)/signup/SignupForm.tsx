@@ -82,8 +82,12 @@ export function SignupForm() {
       <label className={s.check}>
         <input type="checkbox" name="agree" required />
         <span>
-          <Link href="/about" className={s.headerLink} style={{ padding: 0 }}>
-            村の約束
+          <Link href="/terms" className={s.headerLink} style={{ padding: 0 }}>
+            利用規約
+          </Link>
+          （村の約束を含む）と
+          <Link href="/privacy" className={s.headerLink} style={{ padding: 0 }}>
+            プライバシーポリシー
           </Link>
           を読み、同意します
         </span>
