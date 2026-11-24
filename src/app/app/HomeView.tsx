@@ -39,7 +39,7 @@ export function HomeView() {
         <div className={s.stack}>
           <Link href="/app/meeting" className={s.cardMuted}>
             <span className={s.cardLabel}>今月の集会のテーマ</span>
-            <span className={s.cardTitle}>{theme ? theme.title : "今月のテーマを見る"}</span>
+            <span className={s.cardTitle}>{theme ? `“${theme.title}”` : "今月のテーマを見る"}</span>
             <span className={s.muted}>村人たちの語りを読む</span>
           </Link>
           <Link href="/app/library" className={s.cardMuted}>
