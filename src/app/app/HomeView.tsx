@@ -8,25 +8,35 @@ import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import s from "@/components/ui.module.css";
 import { useAuth } from "@/lib/auth/AuthProvider";
-import { getCurrentThemeId, getTheme } from "@/lib/firebase/meeting";
+import { getCurrentThemeId, getTheme, hasPostedIn } from "@/lib/firebase/meeting";
 import type { Theme } from "@/lib/types";
 
 export function HomeView() {
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const uid = user?.uid ?? "";
   const [theme, setTheme] = useState<Theme | null>(null);
+  // 今月の集会にまだ語っていないか。確かめられるまでは何も出さない
+  const [notYet, setNotYet] = useState(false);
 
   useEffect(() => {
     let alive = true;
     getCurrentThemeId()
       .then((id) => (id ? getTheme(id) : null))
       .then(
-        (t) => alive && setTheme(t),
+        async (t) => {
+          if (!alive) return;
+          setTheme(t);
+          if (t && uid) {
+            const posted = await hasPostedIn(t.id, uid).catch(() => true);
+            if (alive) setNotYet(!posted);
+          }
+        },
         () => {},
       );
     return () => {
       alive = false;
     };
-  }, []);
+  }, [uid]);
 
   return (
     <>
@@ -35,6 +45,7 @@ export function HomeView() {
         <Hero preload />
         <div className={s.stack}>
           <h1 className={s.h1}>おかえりなさい{profile ? `、${profile.nickname}さん` : ""}。</h1>
+          {notYet && <p className={s.lead}>今月の集会に、自分のエピソードや想いを文章で語ってみましょう。</p>}
         </div>
         <div className={s.stack}>
           <Link href="/app/meeting" className={s.cardMuted}>

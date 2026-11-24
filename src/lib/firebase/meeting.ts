@@ -90,6 +90,14 @@ export async function listMyPosts(uid: string) {
   return s.docs.map(toPost);
 }
 
+/** そのテーマに自分がもう語ったか（1件あれば true） */
+export async function hasPostedIn(themeId: string, uid: string) {
+  const s = await getDocs(
+    query(collection(firestore(), "meetingPosts"), where("authorUid", "==", uid), where("themeId", "==", themeId), limit(1)),
+  );
+  return !s.empty;
+}
+
 /** 自分の語りを書き直す */
 export function updateMeetingPost(id: string, text: string) {
   return updateDoc(doc(firestore(), "meetingPosts", id), { text, updatedAt: serverTimestamp() });
