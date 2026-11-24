@@ -6,7 +6,7 @@ import s from "@/components/ui.module.css";
 import { OPERATOR_NAME, publicMetadata } from "@/lib/metadata";
 
 const FEATURES = [
-  { title: "住民票", text: "住民一人ひとりの人生と、吃音とともに歩んできた吃音史を読めます。書くかどうかは自由です。" },
+  { title: "住民票", text: "住民一人ひとりのプロフィールと、吃音とともに歩んできた吃音史を読めます。もちろん書くかどうかは自由です。" },
   { title: "集会", text: "毎月ひとつのテーマについて村人たちが文章で語ります。返信やアドバイスはなく、みんなの語りを読み合うための場です。" },
   { title: "図書館", text: "苦労や夢と、それを支えてくれた本との体験を残す本棚です。" },
 ];
