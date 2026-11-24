@@ -18,13 +18,13 @@ const zenOldMincho = Zen_Old_Mincho({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "吃音村｜吃音を抱えているのは、あなた一人ではない。",
+    default: "吃音村｜吃音者の、吃音者による、吃音者のための小さな村",
     template: "%s｜吃音村",
   },
   // 本番ドメインをつなぐまではサイト全体を検索結果に出さない（NEXT_PUBLIC_ALLOW_INDEXING）
   ...(ALLOW_INDEXING ? {} : { robots: { index: false, follow: false } }),
   description:
-    "吃音者の、吃音者による、吃音者のためのオンライン自助コミュニティ。声を出さなくても、言葉を交わせる。互いの人生に触れ、支え合える場所です。",
+    "ここは、吃音者の、吃音者による、吃音者のための小さな村。吃音を抱えながら生きてきた人たちが集まり、文字だけで交流し、互いに支え合う場所です。",
 };
 
 export const viewport: Viewport = {
